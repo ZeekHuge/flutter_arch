@@ -25,12 +25,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-	int _counter = 0;
+	String _showText = ".. no message ..";
+	int _clickCounter = 0;
+	int _msgCounter = 0;
 
 	void _incrementCounter() {
-		setState(() {
-			_counter += 1;
-		});
+		_clickCounter += 1;
 
 		HttpClient client = HttpClient();
 		client.getUrl(Uri.parse('https://api.adviceslip.com/advice'))
@@ -42,7 +42,10 @@ class _MyHomePageState extends State<MyHomePage> {
 				.transform(utf8.decoder)
 				.listen((stringContent) {
 					Map<String, dynamic> jsonData = jsonDecode(stringContent);
-					debugPrint(jsonData['slip']['advice']);
+					setState(() {
+						_msgCounter = _clickCounter;
+						_showText = jsonData['slip']['advice'];
+					});
 				});
 		});
 	}
@@ -81,11 +84,13 @@ class _MyHomePageState extends State<MyHomePage> {
 					mainAxisAlignment: MainAxisAlignment.center,
 					children: <Widget>[
 						Text(
-							'You have pushed the button this many times:',
+							'Message number $_msgCounter is',
+							textAlign: TextAlign.center,
 						),
 						Text(
-							'$_counter',
+							'$_showText',
 							style: Theme.of(context).textTheme.display1,
+							textAlign: TextAlign.center,
 						),
 					],
 				),
