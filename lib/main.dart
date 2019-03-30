@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
+import 'dart:convert';
 
 void main() => runApp(MyApp());
 
@@ -30,6 +32,19 @@ class _MyHomePageState extends State<MyHomePage> {
 			_counter += 1;
 		});
 
+		HttpClient client = HttpClient();
+		client.getUrl(Uri.parse('https://api.adviceslip.com/advice'))
+		.then((clientRequest) {
+			debugPrint("Request closed");
+			return clientRequest.close();
+		}).then((response) {
+			response
+				.transform(utf8.decoder)
+				.listen((stringContent) {
+					Map<String, dynamic> jsonData = jsonDecode(stringContent);
+					debugPrint(jsonData['slip']['advice']);
+				});
+		});
 	}
 
 	@override
