@@ -46,6 +46,7 @@ captures/
 .idea/dictionaries
 .idea/libraries
 .idea/caches
+.idea/codeStyles
 # Android Studio 3 in .gitignore file.
 .idea/caches/build_file_checksums.ser
 .idea/modules.xml
@@ -404,12 +405,19 @@ iOSInjectionProject/
 
 ### Objective-C Patch ###
 
+### Vim ###
+# Swap
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+
+# Session
+Session.vim
+
 ### VisualStudioCode ###
 .vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
 
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
