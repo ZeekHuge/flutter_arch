@@ -4,9 +4,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-typedef void AdviceSubscription (String advice);
-typedef void CountSubscription (int count);
-
 class DemoPageModel {
 
 	static const String _INITIAL_ADVICE = "Initial advice";
