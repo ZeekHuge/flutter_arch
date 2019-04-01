@@ -32,22 +32,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-	String _showText = ".. no message ..";
-	int _msgCounter = 0;
-
-	_MyHomePageState () {
-		widget.model.subscribeToAdviceChange((adviceString) {
-			setState(() {
-				_showText = adviceString;
-			});
-		});
-
-		widget.model.subscribeToCountChange((count) {
-			setState(() {
-				_msgCounter = count;
-			});
-		});
-	}
 
 	@override
 	Widget build(BuildContext context) {
@@ -59,14 +43,19 @@ class _MyHomePageState extends State<MyHomePage> {
 				child: Column(
 					mainAxisAlignment: MainAxisAlignment.center,
 					children: <Widget>[
-						Text(
-							'Message number $_msgCounter is',
-							textAlign: TextAlign.center,
+						ValueListenableBuilder<String> (
+							valueListenable: widget.model.clickMessageNotifier,
+							builder: (context, string, _) => Text(
+								string,
+								textAlign: TextAlign.center,
+							)
 						),
-						Text(
-							'$_showText',
-							style: Theme.of(context).textTheme.display1,
-							textAlign: TextAlign.center,
+						ValueListenableBuilder<String> (
+								valueListenable: widget.model.adviceMessageNotifier,
+								builder: (context, string, _) => Text(
+									string,
+									textAlign: TextAlign.center,
+								)
 						),
 					],
 				),
