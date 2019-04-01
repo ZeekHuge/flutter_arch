@@ -19,39 +19,32 @@ class MyApp extends StatelessWidget {
 	}
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatelessWidget {
+
 	final DemoPageModel model;
-
-	MyHomePage(this.model, {Key key, this.title}) : super(key: key);
-
 	final String title;
 
-	@override
-	_MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-
+	MyHomePage(this.model, {key, this.title}) : super(key: key);
 
 	@override
 	Widget build(BuildContext context) {
 		return Scaffold(
 			appBar: AppBar(
-				title: Text(widget.title),
+				title: Text(title),
 			),
 			body: Center(
 				child: Column(
 					mainAxisAlignment: MainAxisAlignment.center,
 					children: <Widget>[
 						ValueListenableBuilder<String> (
-							valueListenable: widget.model.clickMessageNotifier,
+							valueListenable: model.clickMessageNotifier,
 							builder: (context, string, _) => Text(
 								string,
 								textAlign: TextAlign.center,
 							)
 						),
 						ValueListenableBuilder<String> (
-								valueListenable: widget.model.adviceMessageNotifier,
+								valueListenable: model.adviceMessageNotifier,
 								builder: (context, string, _) => Text(
 									string,
 									textAlign: TextAlign.center,
@@ -61,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
 				),
 			),
 			floatingActionButton: ValueListenableBuilder<bool> (
-				valueListenable: widget.model.fabShowProgress,
+				valueListenable: model.fabShowProgress,
 				builder: (context, showProgress, _) {
 					if (showProgress) {
 						return FloatingActionButton(
@@ -73,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
 						);
 					} else {
 						return FloatingActionButton(
-							onPressed: widget.model.onIncrementClicked,
+							onPressed: model.onIncrementClicked,
 							tooltip: 'Increment',
 							child: Icon(Icons.add),
 							elevation: 20,
