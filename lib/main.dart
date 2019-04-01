@@ -60,11 +60,27 @@ class _MyHomePageState extends State<MyHomePage> {
 					],
 				),
 			),
-			floatingActionButton: FloatingActionButton(
-				onPressed: widget.model.onIncrementClicked,
-				tooltip: 'Increment',
-				child: Icon(Icons.add),
-			), // This trailing comma makes auto-formatting nicer for build methods.
+			floatingActionButton: ValueListenableBuilder<bool> (
+				valueListenable: widget.model.fabShowProgress,
+				builder: (context, showProgress, _) {
+					if (showProgress) {
+						return FloatingActionButton(
+							tooltip: 'Processing...',
+							child: CircularProgressIndicator(
+								valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+							),
+							elevation: 20,
+						);
+					} else {
+						return FloatingActionButton(
+							onPressed: widget.model.onIncrementClicked,
+							tooltip: 'Increment',
+							child: Icon(Icons.add),
+							elevation: 20,
+						);
+					}
+				}, // This trailing comma makes auto-formatting nicer for build methods.
+			)
 		);
 	}
 }
