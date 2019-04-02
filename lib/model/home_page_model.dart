@@ -1,17 +1,16 @@
-import 'dart:io';
-import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:splash_on_flutter/dbModule.dart';
+import 'package:splash_on_flutter/db/dbModule.dart';
 
-class DemoPageModel {
+class HomePageModel {
 
 	static const String _INITIAL_ADVICE = "Initial advice";
 	static const int    _INITIAL_COUNT = 0;
 	static const String _COUNT_MSG_PREFIX = "Msg count is :";
+
 	static const List<Color> _COLOR_LIST = [Colors.brown, Colors.deepPurple, Colors.purple, Colors.red, Colors.green, Colors.orange];
 
 	int _clickCounter = _INITIAL_COUNT;
@@ -25,6 +24,7 @@ class DemoPageModel {
 	ValueNotifier<String> get adviceMessageNotifier => _adviceMessageNotifier;
 	ValueNotifier<bool> get fabShowProgress => _fabShowsProgressBar;
 	ValueNotifier<Color> get themeColor => _themeColor;
+
 
 	Random _randomGenerator = Random();
 	OnlineDB _onlineDB = OnlineDB();
