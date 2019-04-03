@@ -5,6 +5,48 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:splash_on_flutter/db/dbModule.dart';
 
+class TextViewState extends ValueNotifier<TextViewState> {
+
+	String _text;
+	bool _isActive;
+
+    TextViewState(this._isActive, this._text) : super(null);
+
+    TextViewState get value => this;
+
+	String get text => _text;
+	bool get isActive => _isActive;
+
+	void change({bool isActive, String text}) {
+		if (isActive != null)
+			_isActive = isActive;
+		if (text != null)
+			_text = text;
+		notifyListeners();
+	}
+}
+
+class FABState extends ValueNotifier<FABState> {
+
+	bool _isActive;
+	bool _isLoading;
+
+	FABState (this._isActive, this._isLoading) : super(null);
+
+	FABState get value => this;
+
+	bool get isActive => _isActive;
+	bool get isLoading => _isLoading;
+
+	void change ({bool isActive, bool isLoading}) {
+		if (isActive != null)
+			this._isActive = isActive;
+		if (isLoading != null)
+			this._isLoading = isLoading;
+		notifyListeners();
+	}
+}
+
 class HomePageModel {
 
 	static const String _INITIAL_ADVICE = "Initial advice";
@@ -15,14 +57,15 @@ class HomePageModel {
 
 	int _clickCounter = _INITIAL_COUNT;
 
-	ValueNotifier<String> _countMessageNotifier = new ValueNotifier('$_COUNT_MSG_PREFIX: $_INITIAL_COUNT');
-	ValueNotifier<String> _adviceMessageNotifier = new ValueNotifier(_INITIAL_ADVICE);
-	ValueNotifier<bool> _fabShowsProgressBar = new ValueNotifier(false);
+	TextViewState _msgCountState = TextViewState(true, '$_COUNT_MSG_PREFIX $_INITIAL_COUNT');
+	TextViewState _adviceTextState = TextViewState(true, _INITIAL_ADVICE);
+	FABState _fabState = FABState(true, false);
+
 	ValueNotifier<Color> _themeColor = new ValueNotifier(Colors.yellow);
 
-	ValueNotifier<String> get clickMessageNotifier => _countMessageNotifier;
-	ValueNotifier<String> get adviceMessageNotifier => _adviceMessageNotifier;
-	ValueNotifier<bool> get fabShowProgress => _fabShowsProgressBar;
+	TextViewState get clickMessageState => _msgCountState;
+	TextViewState get adviceMessageState => _adviceTextState;
+	FABState get fabState => _fabState;
 	ValueNotifier<Color> get themeColor => _themeColor;
 
 
@@ -30,14 +73,18 @@ class HomePageModel {
 	OnlineDB _onlineDB = OnlineDB();
 
 	void onIncrementClicked () {
-		_fabShowsProgressBar.value = true;
+		_fabState.change(isLoading: true, isActive: false);
+		_adviceTextState.change(isActive: false);
+		_msgCountState.change(isActive: false);
 		_clickCounter ++;
 
 		_onlineDB.getNewAdvice()
 			.then((advice){
-				_countMessageNotifier.value = '$_COUNT_MSG_PREFIX: $_clickCounter';
-				_adviceMessageNotifier.value = advice;
-				_fabShowsProgressBar.value = false;
+				_msgCountState.change(text: '$_COUNT_MSG_PREFIX $_clickCounter');
+				_adviceTextState.change(text: advice);
+				_fabState.change(isLoading: false, isActive: true);
+				_adviceTextState.change(isActive: true);
+				_msgCountState.change(isActive: true);
 			});
 	}
 

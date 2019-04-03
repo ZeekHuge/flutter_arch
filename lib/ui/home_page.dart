@@ -20,18 +20,20 @@ class HomePage extends StatelessWidget {
 					child: Column(
 						mainAxisAlignment: MainAxisAlignment.center,
 						children: <Widget>[
-							ValueListenableBuilder<String> (
-								valueListenable: model.clickMessageNotifier,
-								builder: (context, string, _) => Text(
-									string,
+							ValueListenableBuilder<TextViewState> (
+								valueListenable: model.clickMessageState,
+								builder: (context, textViewState, _) => Text(
+									textViewState.text,
 									textAlign: TextAlign.center,
+									style: TextStyle(color: (textViewState.isActive ? Colors.black : Colors.grey)),
 								)
 							),
-							ValueListenableBuilder<String> (
-								valueListenable: model.adviceMessageNotifier,
-								builder: (context, string, _) => Text(
-									string,
+							ValueListenableBuilder<TextViewState> (
+								valueListenable: model.adviceMessageState,
+								builder: (context, textViewState, _) => Text(
+									textViewState.text,
 									textAlign: TextAlign.center,
+									style: TextStyle(color: (textViewState.isActive ? Colors.black : Colors.grey)),
 								)
 							),
 							RaisedButton (
@@ -41,27 +43,19 @@ class HomePage extends StatelessWidget {
 						],
 					),
 				),
-				floatingActionButton: ValueListenableBuilder<bool> (
-					valueListenable: model.fabShowProgress,
-					builder: (context, showProgress, _) {
-						if (showProgress) {
-							return FloatingActionButton(
-								onPressed: () {},
-								tooltip: 'Processing...',
-								child: CircularProgressIndicator(
-									valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
-								),
-								elevation: 20,
-							);
-						} else {
-							return FloatingActionButton(
-								onPressed: model.onIncrementClicked,
-								tooltip: 'Increment',
-								child: Icon(Icons.add),
-								elevation: 20,
-							);
-						}
-					},
+				floatingActionButton: ValueListenableBuilder<FABState> (
+					valueListenable: model.fabState,
+					builder: (context, fabState, _) => FloatingActionButton(
+						onPressed: (fabState.isActive ? model.onIncrementClicked : (){}),
+						tooltip: (fabState.isLoading ? 'Processing...' : 'Increment'),
+						child: (
+							fabState.isLoading
+								? CircularProgressIndicator(
+									valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),)
+								: Icon(Icons.add)
+						),
+						elevation: 20,
+					)
 				)
 			),
 			builder: (context, value, child){
