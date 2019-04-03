@@ -23,14 +23,7 @@ class _HTTPRequestHelper {
 
 class OnlineDB {
 
-	String _advice = '';
-
-	String get cachedAdvice => _advice;
-
-	Future<String> getNewAdvice () {
-		return _HTTPRequestHelper.simpleGetRequest('https://api.adviceslip.com/advice')
-			.then((jsonData) {
-				return jsonData['slip']['advice'];
-			});
+	Future<Map<String, dynamic>> getNewAdvice () {
+		return _HTTPRequestHelper.simpleGetRequest('https://api.adviceslip.com/advice');
 	}
 }

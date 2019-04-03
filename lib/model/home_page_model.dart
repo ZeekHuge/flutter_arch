@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:splash_on_flutter/core/usecase/advice_reader.dart';
 import 'package:splash_on_flutter/db/dbModule.dart';
 
 class TextViewState extends ValueNotifier<TextViewState> {
@@ -68,9 +69,9 @@ class HomePageModel {
 	FABState get fabState => _fabState;
 	ValueNotifier<Color> get themeColor => _themeColor;
 
-
 	Random _randomGenerator = Random();
-	OnlineDB _onlineDB = OnlineDB();
+	final AdviceReader _adviceReader;
+	HomePageModel (this._adviceReader);
 
 	void onIncrementClicked () {
 		_fabState.change(isLoading: true, isActive: false);
@@ -78,7 +79,7 @@ class HomePageModel {
 		_msgCountState.change(isActive: false);
 		_clickCounter ++;
 
-		_onlineDB.getNewAdvice()
+		_adviceReader.getNewAdvice()
 			.then((advice){
 				_msgCountState.change(text: '$_COUNT_MSG_PREFIX $_clickCounter');
 				_adviceTextState.change(text: advice);
