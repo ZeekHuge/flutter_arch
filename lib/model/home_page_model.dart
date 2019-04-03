@@ -58,9 +58,9 @@ class HomePageModel {
 
 	int _clickCounter = _INITIAL_COUNT;
 
-	TextViewState _msgCountState = TextViewState(true, '$_COUNT_MSG_PREFIX $_INITIAL_COUNT');
-	TextViewState _adviceTextState = TextViewState(true, _INITIAL_ADVICE);
-	FABState _fabState = FABState(true, false);
+	final TextViewState _msgCountState = TextViewState(true, '$_COUNT_MSG_PREFIX $_INITIAL_COUNT');
+	final TextViewState _adviceTextState = TextViewState(true, _INITIAL_ADVICE);
+	final FABState _fabState = FABState(true, false);
 
 	ValueNotifier<Color> _themeColor = new ValueNotifier(Colors.yellow);
 
@@ -69,7 +69,7 @@ class HomePageModel {
 	FABState get fabState => _fabState;
 	ValueNotifier<Color> get themeColor => _themeColor;
 
-	Random _randomGenerator = Random();
+	final Random _randomGenerator = Random();
 	final AdviceReader _adviceReader;
 	HomePageModel (this._adviceReader);
 
