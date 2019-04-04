@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:splash_on_flutter/app_constants.dart';
 import 'package:splash_on_flutter/core/usecase/advice_reader.dart';
 import 'package:splash_on_flutter/db/dbModule.dart';
 
@@ -50,16 +51,14 @@ class FABState extends ValueNotifier<FABState> {
 
 class HomePageModel {
 
-	static const String _INITIAL_ADVICE = "Initial advice";
-	static const int    _INITIAL_COUNT = 0;
-	static const String _COUNT_MSG_PREFIX = "Msg count is :";
+	static const int _INITIAL_COUNT = 0;
 
 	static const List<Color> _COLOR_LIST = [Colors.brown, Colors.deepPurple, Colors.purple, Colors.red, Colors.green, Colors.orange];
 
 	int _clickCounter = _INITIAL_COUNT;
 
-	final TextViewState _msgCountState = TextViewState(true, '$_COUNT_MSG_PREFIX $_INITIAL_COUNT');
-	final TextViewState _adviceTextState = TextViewState(true, _INITIAL_ADVICE);
+	final TextViewState _msgCountState = TextViewState(true, '${UIStrings.HOMEPAGE_COUNT_MSG_PREFIX} $_INITIAL_COUNT');
+	final TextViewState _adviceTextState = TextViewState(true, UIStrings.HOMEPAGE_INITIAL_ADVICE);
 	final FABState _fabState = FABState(true, false);
 
 	ValueNotifier<Color> _themeColor = new ValueNotifier(Colors.yellow);
@@ -81,7 +80,7 @@ class HomePageModel {
 
 		_adviceReader.getNewAdvice()
 			.then((advice){
-				_msgCountState.change(text: '$_COUNT_MSG_PREFIX $_clickCounter');
+				_msgCountState.change(text: '${UIStrings.HOMEPAGE_COUNT_MSG_PREFIX} $_clickCounter');
 				_adviceTextState.change(text: advice);
 				_fabState.change(isLoading: false, isActive: true);
 				_adviceTextState.change(isActive: true);
