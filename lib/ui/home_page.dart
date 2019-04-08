@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:splash_on_flutter/app_constants.dart';
 import 'package:splash_on_flutter/model/home_page_model.dart';
 
 class HomePage extends StatelessWidget {
@@ -24,6 +25,7 @@ class HomePage extends StatelessWidget {
 								valueListenable: model.clickMessageState,
 								builder: (context, textViewState, _) => Text(
 									textViewState.text,
+									key: Key(WidgetKey.HOMEPAGE_CLICK_TEXT),
 									textAlign: TextAlign.center,
 									style: TextStyle(color: (textViewState.isActive ? Colors.black : Colors.grey)),
 								)
@@ -32,6 +34,7 @@ class HomePage extends StatelessWidget {
 								valueListenable: model.adviceMessageState,
 								builder: (context, textViewState, _) => Text(
 									textViewState.text,
+									key: Key(WidgetKey.HOMEPAGE_MSG_TEXT),
 									textAlign: TextAlign.center,
 									style: TextStyle(color: (textViewState.isActive ? Colors.black : Colors.grey)),
 								)
@@ -45,17 +48,26 @@ class HomePage extends StatelessWidget {
 				),
 				floatingActionButton: ValueListenableBuilder<FABState> (
 					valueListenable: model.fabState,
-					builder: (context, fabState, _) => FloatingActionButton(
-						onPressed: (fabState.isActive ? model.onIncrementClicked : (){}),
-						tooltip: (fabState.isLoading ? 'Processing...' : 'Increment'),
-						child: (
-							fabState.isLoading
+					builder: (context, fabState, _) {
+						return FloatingActionButton(
+							onPressed: (fabState.isActive ? model
+								.onIncrementClicked : () {}),
+							tooltip: (fabState.isLoading ? 'Processing...'
+								: 'Increment'),
+							child: (
+								fabState.isLoading
 								? CircularProgressIndicator(
-									valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),)
-								: Icon(Icons.add)
-						),
-						elevation: 20,
-					)
+									valueColor: new AlwaysStoppedAnimation<
+									Color>(Colors.blue),
+									key: Key(WidgetKey.HOMEPAGE_FAB_PROGRESS),
+								)
+								: Icon(
+									Icons.add,
+									key: Key(WidgetKey.HOMEPAGE_FAB_ADD_ICON),
+								)
+							),
+						);
+					}
 				)
 			),
 			builder: (context, value, child){
