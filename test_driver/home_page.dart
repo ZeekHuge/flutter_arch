@@ -49,5 +49,32 @@ class HomePageTests {
 				expect(msgText, isNotNull);
 			}
 		});
+
+
+		test('when fab clicked: if db works: should progress > update > activate', () async {
+			/* set mocks and other */
+
+			final int EXPECTED_COUNT = _getCountFromCountMessage(await _driver.getText(_countTextFinder)) + 1;
+
+			/* actually test */
+			await _driver.tap(_addFinder);
+
+			/* assert and verify */
+			// check if we have progress bar
+			// TODO : unable to really check the progress bar here, as it would result in timeout.
+//			await _driver.waitFor(progressFinder);
+			// wait for the progress bar to complete
+			await _driver.waitForAbsent(_progressFinder);
+			await _driver.waitFor(_addFinder);
+			// check msg updates
+			expect(
+				await _driver.getText(_msgFinder),
+				isNot(UIStrings.HOMEPAGE_INITIAL_ADVICE)
+			);
+			expect(
+				await _driver.getText(_countTextFinder),
+				UIStrings.HOMEPAGE_COUNT_MSG_PREFIX + ' $EXPECTED_COUNT'
+			);
+		});
 	}
 }
