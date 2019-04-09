@@ -59,11 +59,11 @@ class HomePage extends StatelessWidget {
 								? CircularProgressIndicator(
 									valueColor: new AlwaysStoppedAnimation<
 									Color>(Colors.blue),
-									key: Key(WidgetKey.HOMEPAGE_FAB_PROGRESS),
+									key: Key(WidgetKey.HOMEPAGE_PROGRESS_INDICATOR),
 								)
 								: Icon(
 									Icons.add,
-									key: Key(WidgetKey.HOMEPAGE_FAB_ADD_ICON),
+									key: Key(WidgetKey.HOMEPAGE_START_FETCH),
 								)
 							),
 						);

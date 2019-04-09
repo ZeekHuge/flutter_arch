@@ -9,8 +9,8 @@ class HomePageTests {
 
 		FlutterDriver _driver;
 
-		var _addFinder = find.byValueKey(WidgetKey.HOMEPAGE_FAB_ADD_ICON);
-		var _progressFinder = find.byValueKey(WidgetKey.HOMEPAGE_FAB_PROGRESS);
+		var _addFinder = find.byValueKey(WidgetKey.HOMEPAGE_START_FETCH);
+		var _progressFinder = find.byValueKey(WidgetKey.HOMEPAGE_PROGRESS_INDICATOR);
 		var _msgFinder = find.byValueKey(WidgetKey.HOMEPAGE_MSG_TEXT);
 		var _countTextFinder = find.byValueKey(WidgetKey.HOMEPAGE_CLICK_TEXT);
 

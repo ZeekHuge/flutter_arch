@@ -2,8 +2,8 @@
 class WidgetKey {
 	static const String HOMEPAGE_CLICK_TEXT = 'homepage.click.text';
 	static const String HOMEPAGE_MSG_TEXT = 'homepage.msg.text';
-	static const String HOMEPAGE_FAB_ADD_ICON = 'homepage.fab.add';
-	static const String HOMEPAGE_FAB_PROGRESS = 'homepage.fab.progress';
+	static const String HOMEPAGE_START_FETCH = 'homepage.fab.add';
+	static const String HOMEPAGE_PROGRESS_INDICATOR = 'homepage.fab.progress';
 }
 
 class UIStrings {
