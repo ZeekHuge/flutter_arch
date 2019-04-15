@@ -1,6 +1,8 @@
 
 import 'dart:async';
+import 'dart:io';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mockito/mockito.dart';
@@ -14,7 +16,16 @@ import 'package:splash_on_flutter/model/home_page_model.dart';
 import 'helper.dart';
 
 class MockOnlineDB extends Mock implements OnlineDB {}
+class MockErrorHandler extends Mock implements ErrorHandler {}
+class MockIOException extends Mock implements IOException {
+	final String msg;
+	MockIOException(this.msg);
 
+	@override
+	String toString() {
+		return this.msg;
+	}
+}
 
 void main () {
 
@@ -66,6 +77,53 @@ void main () {
 			expect(_sutHomePageModel.adviceMessageState.text, EXPECTED_ADVICE);
 		});
 
+		test('when fetch new advice : if DB fails and no handler : should do nothing', () {
+			/* set mocks and other */
+			when(_mockOnlineDb.getNewAdvice()).thenAnswer((invocation) => Future.error(MockIOException('MSG')));
+
+			/* actually test */
+			_sutHomePageModel.onIncrementClicked();
+
+			/* assert and verify */
+		});
+
+
+		test('when fetch new advice : if DB fails IO error : should invoke internet error handlers', () async {
+			/* set mocks and other */
+			var EXPECTED_MSG = 'MSG';
+			var mockErrorHandler = MockErrorHandler();
+
+			when(_mockOnlineDb.getNewAdvice()).thenAnswer((invocation) => Future.error(MockIOException(EXPECTED_MSG)));
+
+			/* actually test */
+			_sutHomePageModel.register(mockErrorHandler);
+			_sutHomePageModel.onIncrementClicked();
+
+			/* assert and verify */
+			await untilCalled(mockErrorHandler.handleConnectionError(any));
+			verify(mockErrorHandler.handleConnectionError(EXPECTED_MSG));
+			verifyNoMoreInteractions(mockErrorHandler);
+		});
+
+
+		test('when fetch new advice : if DB fails non_IO error : should invoke internal error handlers', () async {
+			/* set mocks and other */
+			var EXPECTED_STRING = 'MSG';
+			var mockErrorHandler = MockErrorHandler();
+
+			when (_mockOnlineDb.getNewAdvice()).thenAnswer((invocation) => Future.error((Exception(EXPECTED_STRING))));
+
+			/* actually test */
+			_sutHomePageModel.register(mockErrorHandler);
+			_sutHomePageModel.onIncrementClicked();
+
+
+			/* assert and verify */
+			await untilCalled(mockErrorHandler.handleInternalError(any));
+			verify(mockErrorHandler.handleInternalError(any));
+			verifyNoMoreInteractions(mockErrorHandler);
+		});
+
 
 		test('when fetch new advice : while DB processing : should have inActive and processing state', () async {
 			/* set mocks and others */
@@ -100,6 +158,46 @@ void main () {
 			expect(_sutHomePageModel.fabState.isActive, isTrue);
 			expect(_sutHomePageModel.adviceMessageState.isActive, isTrue);
 			expect(_sutHomePageModel.clickMessageState.isActive, isTrue);
+		});
+
+		group('test unregisteration of error handler : ', () {
+
+			/** The 2 methods in this group need to be in sync **/
+
+			MockErrorHandler _mockErrorHandler;
+
+			setUp(() {
+				when(_mockOnlineDb.getNewAdvice()).thenAnswer((invocation) => Future.error(Exception('excpetion')));
+				_mockErrorHandler = new MockErrorHandler();
+				_sutHomePageModel.register(_mockErrorHandler);
+			});
+
+			tearDown(() {
+				verifyNoMoreInteractions(_mockErrorHandler);
+				_mockErrorHandler = null;
+			});
+
+			test('since the error_handler is registered : should be call_backed', () async {
+				/* set mocks and other */
+				/* actually test */
+				_sutHomePageModel.onIncrementClicked();
+
+				/* assert and verify */
+				await untilCalled(_mockErrorHandler.handleInternalError(any));
+				verify(_mockErrorHandler.handleInternalError(any));
+			});
+
+			test('unregister error_handler : should not be call_backed', () async {
+				/* set mocks and other */
+
+				/* actually test */
+				_sutHomePageModel.unregister(_mockErrorHandler);
+				_sutHomePageModel.onIncrementClicked();
+
+				/* assert and verify */
+				// wait for 100 microseconds, for if the other futures from error handle need to be completed
+				await Future.delayed(const Duration(microseconds: 1));
+			});
 		});
 	});
 }

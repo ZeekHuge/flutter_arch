@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
@@ -5,7 +6,13 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:splash_on_flutter/app_constants.dart';
 import 'package:splash_on_flutter/core/usecase/advice_reader.dart';
-import 'package:splash_on_flutter/db/dbModule.dart';
+import 'package:splash_on_flutter/ui/widget/callback_widget.dart';
+
+
+abstract class ErrorHandler {
+	void handleConnectionError (String message);
+	void handleInternalError (String message);
+}
 
 class TextViewState extends ValueNotifier<TextViewState> {
 
@@ -49,7 +56,7 @@ class FABState extends ValueNotifier<FABState> {
 	}
 }
 
-class HomePageModel {
+class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 
 	static const int _INITIAL_COUNT = 0;
 
@@ -70,6 +77,9 @@ class HomePageModel {
 
 	final Random _randomGenerator = Random();
 	final AdviceReader _adviceReader;
+
+	ErrorHandler _errorHandler;
+
 	HomePageModel (this._adviceReader);
 
 	void onIncrementClicked () {
@@ -85,10 +95,26 @@ class HomePageModel {
 				_fabState.change(isLoading: false, isActive: true);
 				_adviceTextState.change(isActive: true);
 				_msgCountState.change(isActive: true);
+			}).catchError((e) {
+				if (e is IOException)
+					_errorHandler?.handleConnectionError(e.toString());
+				else
+					_errorHandler?.handleInternalError(e.toString());
 			});
 	}
 
 	void changeThemeColor () {
 		_themeColor.value = _COLOR_LIST[_randomGenerator.nextInt(_COLOR_LIST.length)];
+	}
+
+	@override
+	void register(ErrorHandler callback) {
+		_errorHandler = callback;
+	}
+
+	@override
+	void unregister(ErrorHandler callback) {
+		if (_errorHandler == callback)
+			_errorHandler = null;
 	}
 }
