@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:splash_on_flutter/app_constants.dart';
 import 'package:splash_on_flutter/model/home_page_model.dart';
+import 'package:splash_on_flutter/ui/widget/callback_widget.dart';
 
 class HomePage extends StatelessWidget {
 
@@ -17,33 +18,37 @@ class HomePage extends StatelessWidget {
 			valueListenable: this.model.themeColor,
 			child: Scaffold(
 				appBar: AppBar(title: Text(title)),
-				body: Center(
-					child: Column(
-						mainAxisAlignment: MainAxisAlignment.center,
-						children: <Widget>[
-							ValueListenableBuilder<TextViewState> (
-								valueListenable: model.clickMessageState,
-								builder: (context, textViewState, _) => Text(
-									textViewState.text,
-									key: Key(WidgetKey.HOMEPAGE_CLICK_TEXT),
-									textAlign: TextAlign.center,
-									style: TextStyle(color: (textViewState.isActive ? Colors.black : Colors.grey)),
+				body: CallbackWidget<ErrorHandler>(
+					callbackImplementationGetter: (context) => new ScaffoldCallbacks(Scaffold.of(context)),
+					callbackCaller: model,
+					child: Center(
+						child: Column(
+							mainAxisAlignment: MainAxisAlignment.center,
+							children: <Widget>[
+								ValueListenableBuilder<TextViewState> (
+									valueListenable: model.clickMessageState,
+									builder: (context, textViewState, _) => Text(
+										textViewState.text,
+										key: Key(WidgetKey.HOMEPAGE_CLICK_TEXT),
+										textAlign: TextAlign.center,
+										style: TextStyle(color: (textViewState.isActive ? Colors.black : Colors.grey)),
+									)
+								),
+								ValueListenableBuilder<TextViewState> (
+									valueListenable: model.adviceMessageState,
+									builder: (context, textViewState, _) => Text(
+										textViewState.text,
+										key: Key(WidgetKey.HOMEPAGE_MSG_TEXT),
+										textAlign: TextAlign.center,
+										style: TextStyle(color: (textViewState.isActive ? Colors.black : Colors.grey)),
+									)
+								),
+								RaisedButton (
+									onPressed: model.changeThemeColor,
+									child: Text("Change theme color"),
 								)
-							),
-							ValueListenableBuilder<TextViewState> (
-								valueListenable: model.adviceMessageState,
-								builder: (context, textViewState, _) => Text(
-									textViewState.text,
-									key: Key(WidgetKey.HOMEPAGE_MSG_TEXT),
-									textAlign: TextAlign.center,
-									style: TextStyle(color: (textViewState.isActive ? Colors.black : Colors.grey)),
-								)
-							),
-							RaisedButton (
-								onPressed: model.changeThemeColor,
-								child: Text("Change theme color"),
-							)
-						],
+							],
+						)
 					),
 				),
 				floatingActionButton: ValueListenableBuilder<FABState> (
@@ -80,5 +85,21 @@ class HomePage extends StatelessWidget {
 				);
 			},
 		);
+	}
+}
+
+class ScaffoldCallbacks implements ErrorHandler {
+
+	final ScaffoldState scaffoldState;
+	ScaffoldCallbacks(this.scaffoldState);
+
+	@override
+	void handleConnectionError(String message) {
+		scaffoldState.showSnackBar(new SnackBar(content: Text(message)));
+	}
+
+	@override
+	void handleInternalError(String message) {
+		scaffoldState.showSnackBar(new SnackBar(content: Text(message)));
 	}
 }
