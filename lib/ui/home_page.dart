@@ -55,18 +55,14 @@ class HomePage extends StatelessWidget {
 					valueListenable: model.fabState,
 					builder: (context, fabState, _) {
 						return FloatingActionButton(
-							onPressed: (fabState.isActive ? model
-								.onIncrementClicked : () {}),
-							tooltip: (fabState.isLoading ? 'Processing...'
-								: 'Increment'),
+							onPressed: (fabState.isActive ? model.onIncrementClicked : () {}),
+							tooltip: (fabState.isLoading ? 'Processing...' : 'Increment'),
 							child: (
 								fabState.isLoading
-								? CircularProgressIndicator(
-									valueColor: new AlwaysStoppedAnimation<
-									Color>(Colors.blue),
-									key: Key(WidgetKey.HOMEPAGE_PROGRESS_INDICATOR),
-								)
-								: Icon(
+									? CircularProgressIndicator(
+									valueColor: new AlwaysStoppedAnimation<Color>(Colors.blue),
+									key: Key(WidgetKey.HOMEPAGE_PROGRESS_INDICATOR),)
+									: Icon(
 									Icons.add,
 									key: Key(WidgetKey.HOMEPAGE_START_FETCH),
 								)
@@ -75,7 +71,7 @@ class HomePage extends StatelessWidget {
 					}
 				)
 			),
-			builder: (context, value, child){
+			builder: (context, value, child) {
 				return MaterialApp(
 					title: 'Flutter Demo',
 					theme: ThemeData(

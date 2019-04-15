@@ -21,6 +21,7 @@ class HomePageTests {
 		tearDownAll(() {
 			if (_driver != null)
 				_driver.close();
+			_driver = null;
 		});
 
 		int _getCountFromCountMessage(String countMessage) {

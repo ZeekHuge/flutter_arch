@@ -65,7 +65,7 @@ void main () {
 
 		test('when fetch new advice : if DB works : should update advice text', () async {
 			/* set mocks and other */
-			var EXPECTED_ADVICE = 'advice';
+			const EXPECTED_ADVICE = 'advice';
 			when(_mockOnlineDb.getNewAdvice()).thenAnswer((invocation) => Future.value({'slip':{'advice':EXPECTED_ADVICE}}));
 
 			/* actually test */
@@ -90,7 +90,7 @@ void main () {
 
 		test('when fetch new advice : if DB fails IO error : should invoke internet error handlers', () async {
 			/* set mocks and other */
-			var EXPECTED_MSG = 'MSG';
+			const EXPECTED_MSG = 'MSG';
 			var mockErrorHandler = MockErrorHandler();
 
 			when(_mockOnlineDb.getNewAdvice()).thenAnswer((invocation) => Future.error(MockIOException(EXPECTED_MSG)));
@@ -108,7 +108,7 @@ void main () {
 
 		test('when fetch new advice : if DB fails non_IO error : should invoke internal error handlers', () async {
 			/* set mocks and other */
-			var EXPECTED_STRING = 'MSG';
+			const EXPECTED_STRING = 'MSG';
 			var mockErrorHandler = MockErrorHandler();
 
 			when (_mockOnlineDb.getNewAdvice()).thenAnswer((invocation) => Future.error((Exception(EXPECTED_STRING))));
@@ -145,7 +145,7 @@ void main () {
 
 		test('when fetched new advice : if DB workds : should have active and non processing state', () async {
 			/* set mocks and other */
-			final String EXPECTED_VALUE = 'advice';
+			const String EXPECTED_VALUE = 'advice';
 			when(_mockOnlineDb.getNewAdvice()).thenAnswer((invocation) => Future.value({'slip':{'advice':EXPECTED_VALUE}}));
 
 			/* actually test */
