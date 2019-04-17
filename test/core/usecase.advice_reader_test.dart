@@ -64,7 +64,7 @@ void main () {
 		});
 
 
-		test('get current advice: If fetched yet: shoudl return last advice', () async {
+		test('get current advice: If fetched yet: should return last advice', () async {
 			// set mocks and other
 			const String _EXPECTED_ADVICE = 'EXPECTED_ADVICE';
 			when(_mockOnlineDB.getNewAdvice()).thenAnswer((invocation) =>
