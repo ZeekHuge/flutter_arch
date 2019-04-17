@@ -62,25 +62,31 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 
 	static const List<Color> _COLOR_LIST = [Colors.brown, Colors.deepPurple, Colors.purple, Colors.red, Colors.green, Colors.orange];
 
-	int _clickCounter = _INITIAL_COUNT;
+	int _clickCounter;
 
-	final TextViewState _msgCountState = TextViewState(true, '${UIStrings.HOMEPAGE_COUNT_MSG_PREFIX} $_INITIAL_COUNT');
-	final TextViewState _adviceTextState = TextViewState(true, UIStrings.HOMEPAGE_INITIAL_ADVICE);
-	final FABState _fabState = FABState(true, false);
+	final TextViewState _msgCountState;
+	final TextViewState _adviceTextState;
+	final FABState _fabState;
 
-	ValueNotifier<Color> _themeColor = new ValueNotifier(Colors.yellow);
-
-	TextViewState get clickMessageState => _msgCountState;
-	TextViewState get adviceMessageState => _adviceTextState;
-	FABState get fabState => _fabState;
-	ValueNotifier<Color> get themeColor => _themeColor;
+	final ValueNotifier<Color> _themeColor;
 
 	final Random _randomGenerator;
 	final AdviceReader _adviceReader;
 
 	ErrorHandler _errorHandler;
 
-	HomePageModel (this._adviceReader, this._randomGenerator);
+	TextViewState get clickMessageState => _msgCountState;
+	TextViewState get adviceMessageState => _adviceTextState;
+	FABState get fabState => _fabState;
+	ValueNotifier<Color> get themeColor => _themeColor;
+
+	HomePageModel (this._adviceReader, this._randomGenerator):
+			this._clickCounter = _INITIAL_COUNT,
+			this._fabState = FABState(true, false),
+			this._themeColor = ValueNotifier(Colors.yellow),
+			this._msgCountState = TextViewState(true, '${UIStrings.HOMEPAGE_COUNT_MSG_PREFIX} $_INITIAL_COUNT'),
+			this._adviceTextState = TextViewState(true, UIStrings.HOMEPAGE_INITIAL_ADVICE);
+
 
 	void onIncrementClicked () {
 		_fabState.change(isLoading: true, isActive: false);
