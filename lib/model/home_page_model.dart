@@ -60,7 +60,14 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 
 	static const int _INITIAL_COUNT = 0;
 
-	static const List<Color> _COLOR_LIST = [Colors.brown, Colors.deepPurple, Colors.purple, Colors.red, Colors.green, Colors.orange];
+	static const List<Color> _COLOR_LIST = [
+		Colors.brown,
+		Colors.deepPurple,
+		Colors.purple,
+		Colors.red,
+		Colors.green,
+		Colors.orange
+	];
 
 	int _clickCounter;
 
