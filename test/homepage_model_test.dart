@@ -46,6 +46,21 @@ void main () {
 			_sutHomePageModel = null;
 		});
 
+		test('when change theme color : should change the theme_color property', () async {
+			/* set mocks and other */
+			var originalThemeColor = _sutHomePageModel.themeColor.value;
+
+			/* actually test */
+			var colorChangeListener = ChangeListener(_sutHomePageModel.themeColor, 1);
+			_sutHomePageModel.changeThemeColor();
+			await colorChangeListener.waitForChange();
+
+			/* assert and verify */
+			expect(_sutHomePageModel.themeColor.value, isNot(originalThemeColor));
+
+			// retry it, for the random might return repeated value sometimes
+		}, retry: 2);
+
 
 		test('When model started : should show initial values', () {
 			/* set mocks and other */
