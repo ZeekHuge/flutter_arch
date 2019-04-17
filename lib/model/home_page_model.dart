@@ -75,12 +75,12 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 	FABState get fabState => _fabState;
 	ValueNotifier<Color> get themeColor => _themeColor;
 
-	final Random _randomGenerator = Random();
+	final Random _randomGenerator;
 	final AdviceReader _adviceReader;
 
 	ErrorHandler _errorHandler;
 
-	HomePageModel (this._adviceReader);
+	HomePageModel (this._adviceReader, this._randomGenerator);
 
 	void onIncrementClicked () {
 		_fabState.change(isLoading: true, isActive: false);

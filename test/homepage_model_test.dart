@@ -1,8 +1,8 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mockito/mockito.dart';
@@ -17,6 +17,7 @@ import 'helper.dart';
 
 class MockOnlineDB extends Mock implements OnlineDB {}
 class MockErrorHandler extends Mock implements ErrorHandler {}
+class MockRandom extends Mock implements Random {}
 class MockIOException extends Mock implements IOException {
 	final String msg;
 	MockIOException(this.msg);
@@ -33,22 +34,28 @@ void main () {
 
 		HomePageModel _sutHomePageModel;
 		OnlineDB _mockOnlineDb;
+		Random _mockRandom;
 
 
 		setUp(() {
 			_mockOnlineDb = MockOnlineDB();
-			_sutHomePageModel = new HomePageModel(new AdviceReader(_mockOnlineDb));
+			_mockRandom = MockRandom();
+			_sutHomePageModel = new HomePageModel(new AdviceReader(_mockOnlineDb), _mockRandom);
 		});
 
 
 		tearDown(() {
+			verifyNoMoreInteractions(_mockRandom);
+
 			_mockOnlineDb = null;
+			_mockRandom = null;
 			_sutHomePageModel = null;
 		});
 
 		test('when change theme color : should change the theme_color property', () async {
 			/* set mocks and other */
 			var originalThemeColor = _sutHomePageModel.themeColor.value;
+			when(_mockRandom.nextInt(any)).thenReturn(2);
 
 			/* actually test */
 			var colorChangeListener = ChangeListener(_sutHomePageModel.themeColor, 1);
@@ -57,9 +64,8 @@ void main () {
 
 			/* assert and verify */
 			expect(_sutHomePageModel.themeColor.value, isNot(originalThemeColor));
-
-			// retry it, for the random might return repeated value sometimes
-		}, retry: 2);
+			verify(_mockRandom.nextInt(any));
+		});
 
 
 		test('When model started : should show initial values', () {

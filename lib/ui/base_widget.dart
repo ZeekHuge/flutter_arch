@@ -1,5 +1,7 @@
 
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:splash_on_flutter/core/usecase/advice_reader.dart';
 import 'package:splash_on_flutter/db/dbModule.dart';
@@ -11,8 +13,9 @@ class BaseWidget extends StatelessWidget {
 	Widget build(BuildContext context) {
 		var demoPageModel = HomePageModel(
 			AdviceReader(
-				OnlineDB()
-			)
+				OnlineDB(),
+			),
+			Random(),
 		);
 		return HomePage(demoPageModel, 'Demo home page');
 	}
