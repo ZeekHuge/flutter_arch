@@ -46,6 +46,7 @@ void main () {
 
 		tearDown(() {
 			verifyNoMoreInteractions(_mockRandom);
+			verifyNoMoreInteractions(_mockOnlineDb);
 
 			_mockOnlineDb = null;
 			_mockRandom = null;
@@ -96,6 +97,7 @@ void main () {
 
 			/* assert and verify */
 			expect(_sutHomePageModel.adviceMessageState.text, EXPECTED_ADVICE);
+			verify(_mockOnlineDb.getNewAdvice());
 		});
 
 		test('when fetch new advice : if DB fails and no handler : should do nothing', () {
@@ -106,6 +108,7 @@ void main () {
 			_sutHomePageModel.onIncrementClicked();
 
 			/* assert and verify */
+			verify(_mockOnlineDb.getNewAdvice());
 		});
 
 
@@ -124,6 +127,8 @@ void main () {
 			await untilCalled(mockErrorHandler.handleConnectionError(any));
 			verify(mockErrorHandler.handleConnectionError(EXPECTED_MSG));
 			verifyNoMoreInteractions(mockErrorHandler);
+
+			verify(_mockOnlineDb.getNewAdvice());
 		});
 
 
@@ -143,6 +148,8 @@ void main () {
 			await untilCalled(mockErrorHandler.handleInternalError(any));
 			verify(mockErrorHandler.handleInternalError(any));
 			verifyNoMoreInteractions(mockErrorHandler);
+
+			verify(_mockOnlineDb.getNewAdvice());
 		});
 
 
@@ -161,6 +168,8 @@ void main () {
 			expect(_sutHomePageModel.fabState.isActive, isFalse);
 			expect(_sutHomePageModel.adviceMessageState.isActive, isFalse);
 			expect(_sutHomePageModel.clickMessageState.isActive, isFalse);
+
+			verify(_mockOnlineDb.getNewAdvice());
 		});
 
 
@@ -179,6 +188,8 @@ void main () {
 			expect(_sutHomePageModel.fabState.isActive, isTrue);
 			expect(_sutHomePageModel.adviceMessageState.isActive, isTrue);
 			expect(_sutHomePageModel.clickMessageState.isActive, isTrue);
+
+			verify(_mockOnlineDb.getNewAdvice());
 		});
 
 		group('test unregisteration of error handler : ', () {
@@ -194,6 +205,7 @@ void main () {
 			});
 
 			tearDown(() {
+				verify(_mockOnlineDb.getNewAdvice());
 				verifyNoMoreInteractions(_mockErrorHandler);
 				_mockErrorHandler = null;
 			});
