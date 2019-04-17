@@ -96,11 +96,9 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 
 		_adviceReader.getNewAdvice()
 			.then((advice){
-				_msgCountState.change(text: '${UIStrings.HOMEPAGE_COUNT_MSG_PREFIX} $_clickCounter');
-				_adviceTextState.change(text: advice);
+				_adviceTextState.change(text: advice, isActive: true);
+				_msgCountState.change(text:'${UIStrings.HOMEPAGE_COUNT_MSG_PREFIX} $_clickCounter', isActive: true);
 				_fabState.change(isLoading: false, isActive: true);
-				_adviceTextState.change(isActive: true);
-				_msgCountState.change(isActive: true);
 			}).catchError((e) {
 				if (e is IOException)
 					_errorHandler?.handleConnectionError(e.toString());

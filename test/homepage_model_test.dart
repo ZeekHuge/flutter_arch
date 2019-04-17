@@ -164,10 +164,10 @@ void main () {
 			await changeListener.waitForChange();
 
 			/* assert and verify */
-			expect(_sutHomePageModel.fabState.isLoading, isTrue);
-			expect(_sutHomePageModel.fabState.isActive, isFalse);
-			expect(_sutHomePageModel.adviceMessageState.isActive, isFalse);
-			expect(_sutHomePageModel.clickMessageState.isActive, isFalse);
+			expect(_sutHomePageModel.fabState.value.isLoading, isTrue);
+			expect(_sutHomePageModel.fabState.value.isActive, isFalse);
+			expect(_sutHomePageModel.adviceMessageState.value.isActive, isFalse);
+			expect(_sutHomePageModel.clickMessageState.value.isActive, isFalse);
 
 			verify(_mockOnlineDb.getNewAdvice());
 		});
