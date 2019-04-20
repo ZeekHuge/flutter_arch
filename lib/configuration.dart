@@ -13,10 +13,10 @@ import 'package:splash_on_flutter/ui/home_page.dart';
 class AppConfiguration {
 
 	static StatelessWidget getConfiguredApp () {
-		return MyApp(getConfiguredHomePage());
+		return MyApp(getHomePageConfigured());
 	}
 
-	static HomePage getConfiguredHomePage () {
+	static HomePage getHomePageConfigured () {
 		return HomePage(getConfiguredHomePageModel());
 	}
 
