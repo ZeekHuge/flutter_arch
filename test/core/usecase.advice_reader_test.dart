@@ -1,33 +1,33 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:splash_on_flutter/core/port/advice_data_provider.dart';
 import 'package:splash_on_flutter/core/valueobject/data_valueobject.dart';
 import 'package:splash_on_flutter/core/usecase/advice_reader.dart';
-import 'package:splash_on_flutter/db/dbModule.dart';
 import 'package:mockito/mockito.dart';
 
 import 'dart:async';
 
-class MockedOnlineDB extends Mock implements OnlineDB {}
+class MockedFetchNewAdviceSlipPort extends Mock implements FetchNewAdviceSlip {}
 
 void main () {
 	group('usecase.advice_reader tests', () {
-		OnlineDB _mockOnlineDB;
+		FetchNewAdviceSlip _mockFetchNewAdviceSlipPort;
 
 		setUp(() {
-			_mockOnlineDB = MockedOnlineDB();
+			_mockFetchNewAdviceSlipPort = MockedFetchNewAdviceSlipPort();
 		});
 
 		tearDown(() {
-			_mockOnlineDB = null;
+			_mockFetchNewAdviceSlipPort = null;
 		});
 
 
 		test('get new advice: if db fails: should future error', () async {
 			// set mocks and other
 			final Exception _EXPECTED_ERROR = Exception('Intentional error');
-			when(_mockOnlineDB.getNewAdviceSlip()).thenAnswer((invocation) => Future.error(_EXPECTED_ERROR));
+			when(_mockFetchNewAdviceSlipPort.getNewAdviceSlip()).thenAnswer((invocation) => Future.error(_EXPECTED_ERROR));
 
 			// actually test
-			var _adviceReader = AdviceReader(_mockOnlineDB);
+			var _adviceReader = AdviceReader(_mockFetchNewAdviceSlipPort);
 			var output = _adviceReader.getNewAdvice();
 
 			// assert and verify
@@ -38,10 +38,10 @@ void main () {
 		test('get new advice: If db works: should future advice', () {
 			// set mocks and other
 			const _EXPECTED_ADVICE = 'EXPECTED_STRING';
-			when(_mockOnlineDB.getNewAdviceSlip()).thenAnswer((invocation) => Future.value(Slip(_EXPECTED_ADVICE)));
+			when(_mockFetchNewAdviceSlipPort.getNewAdviceSlip()).thenAnswer((invocation) => Future.value(Slip(_EXPECTED_ADVICE)));
 
 			// actually test
-			var _adviceReader = AdviceReader(_mockOnlineDB);
+			var _adviceReader = AdviceReader(_mockFetchNewAdviceSlipPort);
 			Future<String> output = _adviceReader.getNewAdvice();
 
 			// assert and verify
@@ -53,7 +53,7 @@ void main () {
 			// set mocks and other
 
 			// actually test
-			var _adviceReader = AdviceReader(_mockOnlineDB);
+			var _adviceReader = AdviceReader(_mockFetchNewAdviceSlipPort);
 			var output = _adviceReader.getCurrentAdvice();
 
 			// assert and verify
@@ -64,12 +64,12 @@ void main () {
 		test('get current advice: If fetched yet: should return last advice', () async {
 			// set mocks and other
 			const _EXPECTED_ADVICE = 'EXPECTED_ADVICE';
-			when(_mockOnlineDB.getNewAdviceSlip()).thenAnswer((invocation) =>
+			when(_mockFetchNewAdviceSlipPort.getNewAdviceSlip()).thenAnswer((invocation) =>
 					Future.value(Slip(_EXPECTED_ADVICE))
 			);
 
 			// actually test
-			var _adviceReader = AdviceReader(_mockOnlineDB);
+			var _adviceReader = AdviceReader(_mockFetchNewAdviceSlipPort);
 			await _adviceReader.getNewAdvice();
 			var output = _adviceReader.getCurrentAdvice();
 

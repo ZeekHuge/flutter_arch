@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:splash_on_flutter/core/port/advice_data_provider.dart';
 import 'package:splash_on_flutter/core/valueobject/data_valueobject.dart';
 
 class _HTTPRequestHelper {
@@ -22,7 +23,7 @@ class _HTTPRequestHelper {
 	}
 }
 
-class OnlineDB {
+class OnlineDB implements FetchNewAdviceSlip {
 
 	Future<Slip> getNewAdviceSlip () {
 		return _HTTPRequestHelper.simpleGetRequest('https://api.adviceslip.com/advice')

@@ -8,15 +8,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:splash_on_flutter/app_constants.dart';
+import 'package:splash_on_flutter/core/port/advice_data_provider.dart';
 import 'package:splash_on_flutter/core/valueobject/data_valueobject.dart';
 import 'package:splash_on_flutter/core/usecase/advice_reader.dart';
 
-import 'package:splash_on_flutter/db/dbModule.dart';
 import 'package:splash_on_flutter/model/home_page_model.dart';
 
 import 'helper.dart';
 
-class MockOnlineDB extends Mock implements OnlineDB {}
+class MockFetchNewAdviceSlipPort extends Mock implements FetchNewAdviceSlip {}
 class MockErrorHandler extends Mock implements ErrorHandler {}
 class MockRandom extends Mock implements Random {}
 class MockIOException extends Mock implements IOException {
@@ -34,22 +34,22 @@ void main () {
 	group('Homepage model test', () {
 
 		HomePageModel _sutHomePageModel;
-		OnlineDB _mockOnlineDb;
+		FetchNewAdviceSlip _mockFetchNewAdviceSlipPort;
 		Random _mockRandom;
 
 
 		setUp(() {
-			_mockOnlineDb = MockOnlineDB();
+			_mockFetchNewAdviceSlipPort = MockFetchNewAdviceSlipPort();
 			_mockRandom = MockRandom();
-			_sutHomePageModel = new HomePageModel(new AdviceReader(_mockOnlineDb), _mockRandom);
+			_sutHomePageModel = new HomePageModel(new AdviceReader(_mockFetchNewAdviceSlipPort), _mockRandom);
 		});
 
 
 		tearDown(() {
 			verifyNoMoreInteractions(_mockRandom);
-			verifyNoMoreInteractions(_mockOnlineDb);
+			verifyNoMoreInteractions(_mockFetchNewAdviceSlipPort);
 
-			_mockOnlineDb = null;
+			_mockFetchNewAdviceSlipPort = null;
 			_mockRandom = null;
 			_sutHomePageModel = null;
 		});
@@ -89,7 +89,7 @@ void main () {
 		test('when fetch new advice : if DB works : should update advice text', () async {
 			/* set mocks and other */
 			const EXPECTED_ADVICE = 'advice';
-			when(_mockOnlineDb.getNewAdviceSlip()).thenAnswer((invocation) => Future.value(Slip(EXPECTED_ADVICE)));
+			when(_mockFetchNewAdviceSlipPort.getNewAdviceSlip()).thenAnswer((invocation) => Future.value(Slip(EXPECTED_ADVICE)));
 
 			/* actually test */
 			var changeListener = ChangeListener(_sutHomePageModel.adviceMessageState, 2);
@@ -98,18 +98,18 @@ void main () {
 
 			/* assert and verify */
 			expect(_sutHomePageModel.adviceMessageState.text, EXPECTED_ADVICE);
-			verify(_mockOnlineDb.getNewAdviceSlip());
+			verify(_mockFetchNewAdviceSlipPort.getNewAdviceSlip());
 		});
 
 		test('when fetch new advice : if DB fails and no handler : should do nothing', () {
 			/* set mocks and other */
-			when(_mockOnlineDb.getNewAdviceSlip()).thenAnswer((invocation) => Future.error(MockIOException('MSG')));
+			when(_mockFetchNewAdviceSlipPort.getNewAdviceSlip()).thenAnswer((invocation) => Future.error(MockIOException('MSG')));
 
 			/* actually test */
 			_sutHomePageModel.onIncrementClicked();
 
 			/* assert and verify */
-			verify(_mockOnlineDb.getNewAdviceSlip());
+			verify(_mockFetchNewAdviceSlipPort.getNewAdviceSlip());
 		});
 
 
@@ -118,7 +118,7 @@ void main () {
 			const EXPECTED_MSG = 'MSG';
 			var mockErrorHandler = MockErrorHandler();
 
-			when(_mockOnlineDb.getNewAdviceSlip()).thenAnswer((invocation) => Future.error(MockIOException(EXPECTED_MSG)));
+			when(_mockFetchNewAdviceSlipPort.getNewAdviceSlip()).thenAnswer((invocation) => Future.error(MockIOException(EXPECTED_MSG)));
 
 			/* actually test */
 			_sutHomePageModel.register(mockErrorHandler);
@@ -129,7 +129,7 @@ void main () {
 			verify(mockErrorHandler.handleConnectionError(EXPECTED_MSG));
 			verifyNoMoreInteractions(mockErrorHandler);
 
-			verify(_mockOnlineDb.getNewAdviceSlip());
+			verify(_mockFetchNewAdviceSlipPort.getNewAdviceSlip());
 		});
 
 
@@ -138,7 +138,7 @@ void main () {
 			const EXPECTED_STRING = 'MSG';
 			var mockErrorHandler = MockErrorHandler();
 
-			when (_mockOnlineDb.getNewAdviceSlip()).thenAnswer((invocation) => Future.error((Exception(EXPECTED_STRING))));
+			when (_mockFetchNewAdviceSlipPort.getNewAdviceSlip()).thenAnswer((invocation) => Future.error((Exception(EXPECTED_STRING))));
 
 			/* actually test */
 			_sutHomePageModel.register(mockErrorHandler);
@@ -150,13 +150,13 @@ void main () {
 			verify(mockErrorHandler.handleInternalError(any));
 			verifyNoMoreInteractions(mockErrorHandler);
 
-			verify(_mockOnlineDb.getNewAdviceSlip());
+			verify(_mockFetchNewAdviceSlipPort.getNewAdviceSlip());
 		});
 
 
 		test('when fetch new advice : while DB processing : should have inActive and processing state', () async {
 			/* set mocks and others */
-			when(_mockOnlineDb.getNewAdviceSlip())
+			when(_mockFetchNewAdviceSlipPort.getNewAdviceSlip())
 				.thenAnswer((invocation) => new Completer<Slip>().future);
 
 			/* actually test */
@@ -170,14 +170,14 @@ void main () {
 			expect(_sutHomePageModel.adviceMessageState.value.isActive, isFalse);
 			expect(_sutHomePageModel.clickMessageState.value.isActive, isFalse);
 
-			verify(_mockOnlineDb.getNewAdviceSlip());
+			verify(_mockFetchNewAdviceSlipPort.getNewAdviceSlip());
 		});
 
 
 		test('when fetched new advice : if DB workds : should have active and non processing state', () async {
 			/* set mocks and other */
 			const String EXPECTED_VALUE = 'advice';
-			when(_mockOnlineDb.getNewAdviceSlip()).thenAnswer((invocation) => Future.value(Slip(EXPECTED_VALUE)));
+			when(_mockFetchNewAdviceSlipPort.getNewAdviceSlip()).thenAnswer((invocation) => Future.value(Slip(EXPECTED_VALUE)));
 
 			/* actually test */
 			var changeListener = ChangeListener(_sutHomePageModel.fabState, 2);
@@ -190,7 +190,7 @@ void main () {
 			expect(_sutHomePageModel.adviceMessageState.isActive, isTrue);
 			expect(_sutHomePageModel.clickMessageState.isActive, isTrue);
 
-			verify(_mockOnlineDb.getNewAdviceSlip());
+			verify(_mockFetchNewAdviceSlipPort.getNewAdviceSlip());
 		});
 
 		group('test unregisteration of error handler : ', () {
@@ -200,13 +200,13 @@ void main () {
 			MockErrorHandler _mockErrorHandler;
 
 			setUp(() {
-				when(_mockOnlineDb.getNewAdviceSlip()).thenAnswer((invocation) => Future.error(Exception('excpetion')));
+				when(_mockFetchNewAdviceSlipPort.getNewAdviceSlip()).thenAnswer((invocation) => Future.error(Exception('excpetion')));
 				_mockErrorHandler = new MockErrorHandler();
 				_sutHomePageModel.register(_mockErrorHandler);
 			});
 
 			tearDown(() {
-				verify(_mockOnlineDb.getNewAdviceSlip());
+				verify(_mockFetchNewAdviceSlipPort.getNewAdviceSlip());
 				verifyNoMoreInteractions(_mockErrorHandler);
 				_mockErrorHandler = null;
 			});
