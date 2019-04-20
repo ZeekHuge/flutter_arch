@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mockito/mockito.dart';
 
-import 'package:splash_on_flutter/ui/widget/callback_widget.dart';
+import 'package:splash_on_flutter/widget/callback_widget.dart';
 
 import '../helper.dart';
 

@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:splash_on_flutter/app_constants.dart';
 import 'package:splash_on_flutter/core/usecase/advice_reader.dart';
-import 'package:splash_on_flutter/ui/widget/callback_widget.dart';
+import 'package:splash_on_flutter/widget/callback_widget.dart';
 
 
 abstract class ErrorHandler {

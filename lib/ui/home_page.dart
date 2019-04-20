@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:splash_on_flutter/app_constants.dart';
 import 'package:splash_on_flutter/model/home_page_model.dart';
-import 'package:splash_on_flutter/ui/widget/callback_widget.dart';
+import 'package:splash_on_flutter/widget/callback_widget.dart';
 
 class HomePage extends StatelessWidget {
 
