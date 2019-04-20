@@ -17,6 +17,7 @@ void main () {
 		});
 
 		tearDown(() {
+			verifyNoMoreInteractions(_mockFetchNewAdviceSlipPort);
 			_mockFetchNewAdviceSlipPort = null;
 		});
 
@@ -32,6 +33,7 @@ void main () {
 
 			// assert and verify
 			expect(output, throwsA(equals(_EXPECTED_ERROR)));
+			verify(_mockFetchNewAdviceSlipPort.getNewAdviceSlip());
 		});
 
 
@@ -46,6 +48,7 @@ void main () {
 
 			// assert and verify
 			expect(output, completion(equals(_EXPECTED_ADVICE)));
+			verify(_mockFetchNewAdviceSlipPort.getNewAdviceSlip());
 		});
 
 
@@ -75,6 +78,7 @@ void main () {
 
 			// assert and verify
 			expect(output, _EXPECTED_ADVICE);
+			verify(_mockFetchNewAdviceSlipPort.getNewAdviceSlip());
 		});
 	});
 }
