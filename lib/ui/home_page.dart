@@ -8,16 +8,15 @@ import 'package:splash_on_flutter/widget/callback_widget.dart';
 class HomePage extends StatelessWidget {
 
 	final HomePageModel model;
-	final String title;
 
-	HomePage(this.model, this.title, {Key key}) : super(key: key);
+	HomePage(this.model, {Key key}) : super(key: key);
 
 	@override
 	Widget build(BuildContext context) {
 		return ValueListenableBuilder<Color>(
 			valueListenable: this.model.themeColor,
 			child: Scaffold(
-				appBar: AppBar(title: Text(title)),
+				appBar: AppBar(title: Text(this.model.title)),
 				body: CallbackWidget<ErrorHandler>(
 					callbackImplementationGetter: (context) => new ScaffoldCallbacks(Scaffold.of(context)),
 					callbackCaller: model,

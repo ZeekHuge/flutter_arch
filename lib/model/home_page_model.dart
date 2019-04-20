@@ -71,6 +71,8 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 
 	int _clickCounter;
 
+	final String _title;
+
 	final TextViewState _msgCountState;
 	final TextViewState _adviceTextState;
 	final FABState _fabState;
@@ -86,8 +88,10 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 	TextViewState get adviceMessageState => _adviceTextState;
 	FABState get fabState => _fabState;
 	ValueNotifier<Color> get themeColor => _themeColor;
+	String get title => _title;
 
 	HomePageModel (this._adviceReader, this._randomGenerator):
+			this._title = UIStrings.APPLICATION_TITLE,
 			this._clickCounter = _INITIAL_COUNT,
 			this._fabState = FABState(true, false),
 			this._themeColor = ValueNotifier(Colors.yellow),
