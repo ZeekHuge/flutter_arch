@@ -37,15 +37,15 @@ void main () {
 
 		test('get new advice: If db works: should future advice', () {
 			// set mocks and other
-			const String _EXPECTED_STRING = 'EXPECTED_STRING';
-			when(_mockOnlineDB.getNewAdviceSlip()).thenAnswer((invocation) => Future.value(Slip(_EXPECTED_STRING)));
+			const _EXPECTED_ADVICE = 'EXPECTED_STRING';
+			when(_mockOnlineDB.getNewAdviceSlip()).thenAnswer((invocation) => Future.value(Slip(_EXPECTED_ADVICE)));
 
 			// actually test
 			var _adviceReader = AdviceReader(_mockOnlineDB);
 			Future<String> output = _adviceReader.getNewAdvice();
 
 			// assert and verify
-			expect(output, completion(equals(_EXPECTED_STRING)));
+			expect(output, completion(equals(_EXPECTED_ADVICE)));
 		});
 
 
@@ -57,13 +57,13 @@ void main () {
 			var output = _adviceReader.getCurrentAdvice();
 
 			// assert and verify
-			expect(output, '');
+			expect(output, isEmpty);
 		});
 
 
 		test('get current advice: If fetched yet: should return last advice', () async {
 			// set mocks and other
-			const String _EXPECTED_ADVICE = 'EXPECTED_ADVICE';
+			const _EXPECTED_ADVICE = 'EXPECTED_ADVICE';
 			when(_mockOnlineDB.getNewAdviceSlip()).thenAnswer((invocation) =>
 					Future.value(Slip(_EXPECTED_ADVICE))
 			);
