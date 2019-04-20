@@ -11,14 +11,17 @@ class MockedFetchNewAdviceSlipPort extends Mock implements FetchNewAdviceSlip {}
 void main () {
 	group('usecase.advice_reader tests', () {
 		FetchNewAdviceSlip _mockFetchNewAdviceSlipPort;
+		AdviceReader _sutAdviceReader;
 
 		setUp(() {
 			_mockFetchNewAdviceSlipPort = MockedFetchNewAdviceSlipPort();
+			_sutAdviceReader = AdviceReader(_mockFetchNewAdviceSlipPort);
 		});
 
 		tearDown(() {
 			verifyNoMoreInteractions(_mockFetchNewAdviceSlipPort);
 			_mockFetchNewAdviceSlipPort = null;
+			_sutAdviceReader = null;
 		});
 
 
@@ -28,8 +31,7 @@ void main () {
 			when(_mockFetchNewAdviceSlipPort.getNewAdviceSlip()).thenAnswer((invocation) => Future.error(_EXPECTED_ERROR));
 
 			// actually test
-			var _adviceReader = AdviceReader(_mockFetchNewAdviceSlipPort);
-			var output = _adviceReader.getNewAdvice();
+			var output = _sutAdviceReader.getNewAdvice();
 
 			// assert and verify
 			expect(output, throwsA(equals(_EXPECTED_ERROR)));
@@ -43,8 +45,7 @@ void main () {
 			when(_mockFetchNewAdviceSlipPort.getNewAdviceSlip()).thenAnswer((invocation) => Future.value(Slip(_EXPECTED_ADVICE)));
 
 			// actually test
-			var _adviceReader = AdviceReader(_mockFetchNewAdviceSlipPort);
-			Future<String> output = _adviceReader.getNewAdvice();
+			Future<String> output = _sutAdviceReader.getNewAdvice();
 
 			// assert and verify
 			expect(output, completion(equals(_EXPECTED_ADVICE)));
@@ -56,8 +57,7 @@ void main () {
 			// set mocks and other
 
 			// actually test
-			var _adviceReader = AdviceReader(_mockFetchNewAdviceSlipPort);
-			var output = _adviceReader.getCurrentAdvice();
+			var output = _sutAdviceReader.getCurrentAdvice();
 
 			// assert and verify
 			expect(output, isEmpty);
@@ -72,9 +72,8 @@ void main () {
 			);
 
 			// actually test
-			var _adviceReader = AdviceReader(_mockFetchNewAdviceSlipPort);
-			await _adviceReader.getNewAdvice();
-			var output = _adviceReader.getCurrentAdvice();
+			await _sutAdviceReader.getNewAdvice();
+			var output = _sutAdviceReader.getCurrentAdvice();
 
 			// assert and verify
 			expect(output, _EXPECTED_ADVICE);
