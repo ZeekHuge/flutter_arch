@@ -5,7 +5,7 @@ import 'package:splash_on_flutter/configuration.dart';
 
 
 void main() {
-  enableFlutterDriverExtension();
-  runApp(MyApp());
+    enableFlutterDriverExtension();
+    runApp(AppConfiguration.getConfiguredApp());
 }
 
