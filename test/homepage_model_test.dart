@@ -88,7 +88,7 @@ void main () {
 		test('when fetch new advice : if DB works : should update advice text', () async {
 			/* set mocks and other */
 			const EXPECTED_ADVICE = 'advice';
-			when(_mockOnlineDb.getNewAdvice()).thenAnswer((invocation) => Future.value({'slip':{'advice':EXPECTED_ADVICE}}));
+			when(_mockOnlineDb.getNewAdviceSlip()).thenAnswer((invocation) => Future.value({'slip':{'advice':EXPECTED_ADVICE}}));
 
 			/* actually test */
 			var changeListener = ChangeListener(_sutHomePageModel.adviceMessageState, 2);
@@ -97,18 +97,18 @@ void main () {
 
 			/* assert and verify */
 			expect(_sutHomePageModel.adviceMessageState.text, EXPECTED_ADVICE);
-			verify(_mockOnlineDb.getNewAdvice());
+			verify(_mockOnlineDb.getNewAdviceSlip());
 		});
 
 		test('when fetch new advice : if DB fails and no handler : should do nothing', () {
 			/* set mocks and other */
-			when(_mockOnlineDb.getNewAdvice()).thenAnswer((invocation) => Future.error(MockIOException('MSG')));
+			when(_mockOnlineDb.getNewAdviceSlip()).thenAnswer((invocation) => Future.error(MockIOException('MSG')));
 
 			/* actually test */
 			_sutHomePageModel.onIncrementClicked();
 
 			/* assert and verify */
-			verify(_mockOnlineDb.getNewAdvice());
+			verify(_mockOnlineDb.getNewAdviceSlip());
 		});
 
 
@@ -117,7 +117,7 @@ void main () {
 			const EXPECTED_MSG = 'MSG';
 			var mockErrorHandler = MockErrorHandler();
 
-			when(_mockOnlineDb.getNewAdvice()).thenAnswer((invocation) => Future.error(MockIOException(EXPECTED_MSG)));
+			when(_mockOnlineDb.getNewAdviceSlip()).thenAnswer((invocation) => Future.error(MockIOException(EXPECTED_MSG)));
 
 			/* actually test */
 			_sutHomePageModel.register(mockErrorHandler);
@@ -128,7 +128,7 @@ void main () {
 			verify(mockErrorHandler.handleConnectionError(EXPECTED_MSG));
 			verifyNoMoreInteractions(mockErrorHandler);
 
-			verify(_mockOnlineDb.getNewAdvice());
+			verify(_mockOnlineDb.getNewAdviceSlip());
 		});
 
 
@@ -137,7 +137,7 @@ void main () {
 			const EXPECTED_STRING = 'MSG';
 			var mockErrorHandler = MockErrorHandler();
 
-			when (_mockOnlineDb.getNewAdvice()).thenAnswer((invocation) => Future.error((Exception(EXPECTED_STRING))));
+			when (_mockOnlineDb.getNewAdviceSlip()).thenAnswer((invocation) => Future.error((Exception(EXPECTED_STRING))));
 
 			/* actually test */
 			_sutHomePageModel.register(mockErrorHandler);
@@ -149,13 +149,13 @@ void main () {
 			verify(mockErrorHandler.handleInternalError(any));
 			verifyNoMoreInteractions(mockErrorHandler);
 
-			verify(_mockOnlineDb.getNewAdvice());
+			verify(_mockOnlineDb.getNewAdviceSlip());
 		});
 
 
 		test('when fetch new advice : while DB processing : should have inActive and processing state', () async {
 			/* set mocks and others */
-			when(_mockOnlineDb.getNewAdvice())
+			when(_mockOnlineDb.getNewAdviceSlip())
 				.thenAnswer((invocation) => new Completer<Map<String, dynamic>>().future);
 
 			/* actually test */
@@ -169,14 +169,14 @@ void main () {
 			expect(_sutHomePageModel.adviceMessageState.value.isActive, isFalse);
 			expect(_sutHomePageModel.clickMessageState.value.isActive, isFalse);
 
-			verify(_mockOnlineDb.getNewAdvice());
+			verify(_mockOnlineDb.getNewAdviceSlip());
 		});
 
 
 		test('when fetched new advice : if DB workds : should have active and non processing state', () async {
 			/* set mocks and other */
 			const String EXPECTED_VALUE = 'advice';
-			when(_mockOnlineDb.getNewAdvice()).thenAnswer((invocation) => Future.value({'slip':{'advice':EXPECTED_VALUE}}));
+			when(_mockOnlineDb.getNewAdviceSlip()).thenAnswer((invocation) => Future.value({'slip':{'advice':EXPECTED_VALUE}}));
 
 			/* actually test */
 			var changeListener = ChangeListener(_sutHomePageModel.fabState, 2);
@@ -189,7 +189,7 @@ void main () {
 			expect(_sutHomePageModel.adviceMessageState.isActive, isTrue);
 			expect(_sutHomePageModel.clickMessageState.isActive, isTrue);
 
-			verify(_mockOnlineDb.getNewAdvice());
+			verify(_mockOnlineDb.getNewAdviceSlip());
 		});
 
 		group('test unregisteration of error handler : ', () {
@@ -199,13 +199,13 @@ void main () {
 			MockErrorHandler _mockErrorHandler;
 
 			setUp(() {
-				when(_mockOnlineDb.getNewAdvice()).thenAnswer((invocation) => Future.error(Exception('excpetion')));
+				when(_mockOnlineDb.getNewAdviceSlip()).thenAnswer((invocation) => Future.error(Exception('excpetion')));
 				_mockErrorHandler = new MockErrorHandler();
 				_sutHomePageModel.register(_mockErrorHandler);
 			});
 
 			tearDown(() {
-				verify(_mockOnlineDb.getNewAdvice());
+				verify(_mockOnlineDb.getNewAdviceSlip());
 				verifyNoMoreInteractions(_mockErrorHandler);
 				_mockErrorHandler = null;
 			});

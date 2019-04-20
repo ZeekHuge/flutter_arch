@@ -23,7 +23,7 @@ class _HTTPRequestHelper {
 
 class OnlineDB {
 
-	Future<Map<String, dynamic>> getNewAdvice () {
+	Future<Map<String, dynamic>> getNewAdviceSlip () {
 		return _HTTPRequestHelper.simpleGetRequest('https://api.adviceslip.com/advice');
 	}
 }

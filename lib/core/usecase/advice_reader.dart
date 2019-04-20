@@ -13,7 +13,7 @@ class AdviceReader {
 	}
 
 	Future<String> getNewAdvice () {
-		return _onlineDB.getNewAdvice()
+		return _onlineDB.getNewAdviceSlip()
 			.then((mapDate) {
 				_currentAdvice = mapDate['slip']['advice'];
 				return _currentAdvice;

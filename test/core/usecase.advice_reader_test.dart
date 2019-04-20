@@ -23,7 +23,7 @@ void main () {
 		test('get new advice: if db fails: should future error', () async {
 			// set mocks and other
 			final Exception _EXPECTED_ERROR = Exception('Intentional error');
-			when(_mockOnlineDB.getNewAdvice()).thenAnswer((invocation) => Future.error(_EXPECTED_ERROR));
+			when(_mockOnlineDB.getNewAdviceSlip()).thenAnswer((invocation) => Future.error(_EXPECTED_ERROR));
 
 			// actually test
 			var _adviceReader = AdviceReader(_mockOnlineDB);
@@ -37,7 +37,7 @@ void main () {
 		test('get new advice: If db works: should future advice', () {
 			// set mocks and other
 			const String _EXPECTED_STRING = 'EXPECTED_STRING';
-			when(_mockOnlineDB.getNewAdvice()).thenAnswer((invocation) => Future.value(
+			when(_mockOnlineDB.getNewAdviceSlip()).thenAnswer((invocation) => Future.value(
 				{'slip': {
 					'advice' : _EXPECTED_STRING
 				}}
@@ -67,7 +67,7 @@ void main () {
 		test('get current advice: If fetched yet: should return last advice', () async {
 			// set mocks and other
 			const String _EXPECTED_ADVICE = 'EXPECTED_ADVICE';
-			when(_mockOnlineDB.getNewAdvice()).thenAnswer((invocation) =>
+			when(_mockOnlineDB.getNewAdviceSlip()).thenAnswer((invocation) =>
 					Future.value(
 						{'slip':
 							{
