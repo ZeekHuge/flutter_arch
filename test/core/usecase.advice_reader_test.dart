@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:splash_on_flutter/core/valueobject/data_valueobject.dart';
 import 'package:splash_on_flutter/core/usecase/advice_reader.dart';
 import 'package:splash_on_flutter/db/dbModule.dart';
 import 'package:mockito/mockito.dart';
@@ -37,11 +38,7 @@ void main () {
 		test('get new advice: If db works: should future advice', () {
 			// set mocks and other
 			const String _EXPECTED_STRING = 'EXPECTED_STRING';
-			when(_mockOnlineDB.getNewAdviceSlip()).thenAnswer((invocation) => Future.value(
-				{'slip': {
-					'advice' : _EXPECTED_STRING
-				}}
-			));
+			when(_mockOnlineDB.getNewAdviceSlip()).thenAnswer((invocation) => Future.value(Slip(_EXPECTED_STRING)));
 
 			// actually test
 			var _adviceReader = AdviceReader(_mockOnlineDB);
@@ -68,13 +65,7 @@ void main () {
 			// set mocks and other
 			const String _EXPECTED_ADVICE = 'EXPECTED_ADVICE';
 			when(_mockOnlineDB.getNewAdviceSlip()).thenAnswer((invocation) =>
-					Future.value(
-						{'slip':
-							{
-								'advice':_EXPECTED_ADVICE
-							}
-						}
-					)
+					Future.value(Slip(_EXPECTED_ADVICE))
 			);
 
 			// actually test

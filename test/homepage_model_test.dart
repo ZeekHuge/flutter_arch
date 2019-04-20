@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:splash_on_flutter/app_constants.dart';
+import 'package:splash_on_flutter/core/valueobject/data_valueobject.dart';
 import 'package:splash_on_flutter/core/usecase/advice_reader.dart';
 
 import 'package:splash_on_flutter/db/dbModule.dart';
@@ -88,7 +89,7 @@ void main () {
 		test('when fetch new advice : if DB works : should update advice text', () async {
 			/* set mocks and other */
 			const EXPECTED_ADVICE = 'advice';
-			when(_mockOnlineDb.getNewAdviceSlip()).thenAnswer((invocation) => Future.value({'slip':{'advice':EXPECTED_ADVICE}}));
+			when(_mockOnlineDb.getNewAdviceSlip()).thenAnswer((invocation) => Future.value(Slip(EXPECTED_ADVICE)));
 
 			/* actually test */
 			var changeListener = ChangeListener(_sutHomePageModel.adviceMessageState, 2);
@@ -156,7 +157,7 @@ void main () {
 		test('when fetch new advice : while DB processing : should have inActive and processing state', () async {
 			/* set mocks and others */
 			when(_mockOnlineDb.getNewAdviceSlip())
-				.thenAnswer((invocation) => new Completer<Map<String, dynamic>>().future);
+				.thenAnswer((invocation) => new Completer<Slip>().future);
 
 			/* actually test */
 			var changeListener = ChangeListener(_sutHomePageModel.fabState, 1);
@@ -176,7 +177,7 @@ void main () {
 		test('when fetched new advice : if DB workds : should have active and non processing state', () async {
 			/* set mocks and other */
 			const String EXPECTED_VALUE = 'advice';
-			when(_mockOnlineDb.getNewAdviceSlip()).thenAnswer((invocation) => Future.value({'slip':{'advice':EXPECTED_VALUE}}));
+			when(_mockOnlineDb.getNewAdviceSlip()).thenAnswer((invocation) => Future.value(Slip(EXPECTED_VALUE)));
 
 			/* actually test */
 			var changeListener = ChangeListener(_sutHomePageModel.fabState, 2);

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:splash_on_flutter/core/valueobject/data_valueobject.dart';
 
 class _HTTPRequestHelper {
 	static Future<Map<String, dynamic>> simpleGetRequest (String url) {
@@ -23,7 +24,10 @@ class _HTTPRequestHelper {
 
 class OnlineDB {
 
-	Future<Map<String, dynamic>> getNewAdviceSlip () {
-		return _HTTPRequestHelper.simpleGetRequest('https://api.adviceslip.com/advice');
+	Future<Slip> getNewAdviceSlip () {
+		return _HTTPRequestHelper.simpleGetRequest('https://api.adviceslip.com/advice')
+			.then((dataMap) {
+				return new Slip(dataMap['slip']['advice']);
+			});
 	}
 }
