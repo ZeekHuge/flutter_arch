@@ -19,6 +19,7 @@ import 'helper.dart';
 class MockFetchNewAdviceSlipPort extends Mock implements FetchNewAdviceSlip {}
 class MockErrorHandler extends Mock implements ErrorHandler {}
 class MockRandom extends Mock implements Random {}
+class MockCurrentAdviceSlipPort extends Mock implements CurrentAdviceSlip {}
 class MockIOException extends Mock implements IOException {
 	final String msg;
 	MockIOException(this.msg);
@@ -35,20 +36,27 @@ void main () {
 
 		HomePageModel _sutHomePageModel;
 		FetchNewAdviceSlip _mockFetchNewAdviceSlipPort;
+		CurrentAdviceSlip _mockCurrentAdviceSlipPort;
 		Random _mockRandom;
 
 
 		setUp(() {
 			_mockFetchNewAdviceSlipPort = MockFetchNewAdviceSlipPort();
 			_mockRandom = MockRandom();
-			_sutHomePageModel = new HomePageModel(new AdviceReader(_mockFetchNewAdviceSlipPort), _mockRandom);
+			_mockCurrentAdviceSlipPort = MockCurrentAdviceSlipPort();
+			_sutHomePageModel = new HomePageModel(new AdviceReader(
+				_mockFetchNewAdviceSlipPort,
+				_mockCurrentAdviceSlipPort
+			), _mockRandom);
 		});
 
 
 		tearDown(() {
 			verifyNoMoreInteractions(_mockRandom);
 			verifyNoMoreInteractions(_mockFetchNewAdviceSlipPort);
+//			verifyNoMoreInteractions(_mockCurrentAdviceSlipPort);
 
+			_mockCurrentAdviceSlipPort = null;
 			_mockFetchNewAdviceSlipPort = null;
 			_mockRandom = null;
 			_sutHomePageModel = null;

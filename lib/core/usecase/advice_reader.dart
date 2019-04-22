@@ -5,19 +5,27 @@ import 'package:splash_on_flutter/core/valueobject/data_valueobject.dart';
 class AdviceReader {
 
 	FetchNewAdviceSlip _fetchNewAdviceSlipPort;
-	Slip _currentAdviceSlip;
+	final CurrentAdviceSlip _currentAdviceSlipPort;
 
-	AdviceReader(this._fetchNewAdviceSlipPort) : this._currentAdviceSlip = Slip('');
+	AdviceReader(this._fetchNewAdviceSlipPort, this._currentAdviceSlipPort);
 
-	String getCurrentAdvice() {
-		return _currentAdviceSlip.advice;
+	Future<String> getCurrentAdvice() {
+		return _currentAdviceSlipPort.readSlip()
+			.then((slip) {
+				if (slip == null)
+					return '';
+				return slip.advice;
+			});
 	}
 
 	Future<String> getNewAdvice () {
+		Slip currentAdviceSlip;
 		return _fetchNewAdviceSlipPort.getNewAdviceSlip()
 			.then((slip) {
-				_currentAdviceSlip = slip;
-				return _currentAdviceSlip.advice;
+				currentAdviceSlip = slip;
+				return _currentAdviceSlipPort.writeSlip(slip);
+			}).then((_void) {
+				return currentAdviceSlip.advice;
 			});
 	}
 }

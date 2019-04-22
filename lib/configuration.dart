@@ -28,7 +28,11 @@ class AppConfiguration {
 	}
 
 	static AdviceReader getConfiguredAdviceReader () {
-		return AdviceReader(getConfiguredOnlineDB());
+		return AdviceReader(getConfiguredOnlineDB(), getConfiguredLocalDB());
+	}
+
+	static LocalDB getConfiguredLocalDB () {
+		return LocalDB();
 	}
 
 	static OnlineDB getConfiguredOnlineDB () {
