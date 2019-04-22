@@ -10,7 +10,7 @@ class MockedFetchNewAdviceSlipPort extends Mock implements FetchNewAdviceSlip {}
 class MockedCurrentAdviceSlipPort extends Mock implements CurrentAdviceSlip {}
 
 void main () {
-	group('usecase.advice_reader tests', () {
+	group('usecase.advice_reader tests: ', () {
 		FetchNewAdviceSlip _mockFetchNewAdviceSlipPort;
 		AdviceReader _sutAdviceReader;
 		CurrentAdviceSlip _mockedCurrentAdviceSlipPort;
