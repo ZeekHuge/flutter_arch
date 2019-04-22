@@ -27,6 +27,16 @@ class _HTTPRequestHelper {
 
 class OnlineDB implements FetchNewAdviceSlip {
 
+	static OnlineDB _singletonInstance;
+
+	OnlineDB._();
+
+	factory OnlineDB() {
+		if (_singletonInstance == null)
+			_singletonInstance = OnlineDB._();
+		return _singletonInstance;
+	}
+
 	Future<Slip> getNewAdviceSlip () {
 		return _HTTPRequestHelper.simpleGetRequest('https://api.adviceslip.com/advice')
 			.then((dataMap) {
@@ -38,6 +48,16 @@ class OnlineDB implements FetchNewAdviceSlip {
 class LocalDB implements CurrentAdviceSlip {
 
 	static const _ADVICE_KEY = 'advice';
+
+	static LocalDB _singletonInstance;
+
+	LocalDB._();
+
+	factory LocalDB() {
+		if (_singletonInstance == null)
+			_singletonInstance = LocalDB._();
+		return _singletonInstance;
+	}
 
 	@override
     Future<Slip> readSlip() {
