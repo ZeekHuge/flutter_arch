@@ -14,7 +14,9 @@ import 'package:splash_on_flutter/core/usecase/advice_reader.dart';
 
 import 'package:splash_on_flutter/model/home_page_model.dart';
 
-import 'helper.dart';
+import '../test_helper/helper.dart';
+
+
 
 class MockFetchNewAdviceSlipPort extends Mock implements FetchNewAdviceSlip {}
 class MockErrorHandler extends Mock implements ErrorHandler {}

@@ -4,7 +4,8 @@ import 'package:mockito/mockito.dart';
 
 import 'package:splash_on_flutter/widget/callback_widget.dart';
 
-import '../helper.dart';
+import '../test_helper/helper.dart';
+
 
 class MockCallbackCaller extends Mock implements CallbackWidgetCaller<Object> {}
 
