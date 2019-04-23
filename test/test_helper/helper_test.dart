@@ -6,15 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'helper.dart';
 
 
-
-Future<void> fn () {
-	var c = Completer();
-	var e = new TimeoutException('intentional error');
-	c.completeError(e);
-	return c.future;
-//	throw e;
-}
-
 void main () {
 	group('Test ChangeListener class : ', () {
 
