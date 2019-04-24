@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:splash_on_flutter/app_constants.dart';
 import 'package:splash_on_flutter/core/usecase/advice_reader.dart';
+import 'package:splash_on_flutter/core/valueobject/exception.dart';
 import 'package:splash_on_flutter/widget/callback_widget.dart';
 
 
@@ -111,7 +112,7 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 				_msgCountState.change(text:'${UIStrings.HOMEPAGE_COUNT_MSG_PREFIX} $_clickCounter', isActive: true);
 				_fabState.change(isLoading: false, isActive: true);
 			}).catchError((e) {
-				if (e is IOException)
+				if (e is InternetNotConnectedException)
 					_errorHandler?.handleConnectionError(e.toString());
 				else
 					_errorHandler?.handleInternalError(e.toString());

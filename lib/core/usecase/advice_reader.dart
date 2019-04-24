@@ -1,6 +1,7 @@
 
 import 'package:splash_on_flutter/core/port/advice_data_provider.dart';
 import 'package:splash_on_flutter/core/valueobject/data_valueobject.dart';
+import 'package:splash_on_flutter/core/valueobject/exception.dart';
 
 class AdviceReader {
 
@@ -21,7 +22,9 @@ class AdviceReader {
 	Future<String> getNewAdvice () {
 		Slip currentAdviceSlip;
 		return _fetchNewAdviceSlipPort.getNewAdviceSlip()
-			.then((slip) {
+			.catchError((e) {
+				throw InternetNotConnectedException(e.toString());
+			}).then((slip) {
 				currentAdviceSlip = slip;
 				return _currentAdviceSlipPort.writeSlip(slip);
 			}).then((_void) {

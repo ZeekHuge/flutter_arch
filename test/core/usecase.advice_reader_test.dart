@@ -6,6 +6,8 @@ import 'package:mockito/mockito.dart';
 
 import 'dart:async';
 
+import 'package:splash_on_flutter/core/valueobject/exception.dart';
+
 class MockedFetchNewAdviceSlipPort extends Mock implements FetchNewAdviceSlip {}
 class MockedCurrentAdviceSlipPort extends Mock implements CurrentAdviceSlip {}
 
@@ -31,17 +33,28 @@ void main () {
 		});
 
 
-		test('get new advice: if db fails: should not write current and return future error', () async {
+		test('get new advice: if db fails: should not write current and return future InternetNotConnectedException', () async {
 			// set mocks and other
-			final Exception _EXPECTED_ERROR = Exception('Intentional error');
-			when(_mockFetchNewAdviceSlipPort.getNewAdviceSlip()).thenAnswer((invocation) => Future.error(_EXPECTED_ERROR));
+			const EXPECTED_CAUSE = 'EXPECTED_CAUSE';
+			when(_mockFetchNewAdviceSlipPort.getNewAdviceSlip())
+				.thenAnswer((invocation) => Future.error(Exception(EXPECTED_CAUSE)));
 
-			// actually test
-			var output = _sutAdviceReader.getNewAdvice();
-
-			// assert and verify
-			expect(output, throwsA(equals(_EXPECTED_ERROR)));
-			verify(_mockFetchNewAdviceSlipPort.getNewAdviceSlip());
+			try {
+				// actually test
+				await _sutAdviceReader.getNewAdvice();
+				fail('We excpect an exception here');
+			} catch (e) {
+				// assert and verify
+				expect(
+					e.toString(),
+					equals(
+						InternetNotConnectedException(
+							Exception(EXPECTED_CAUSE).toString()
+						).toString()
+					)
+				);
+				verify(_mockFetchNewAdviceSlipPort.getNewAdviceSlip());
+			}
 		});
 
 

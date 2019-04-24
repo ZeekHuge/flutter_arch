@@ -9,6 +9,7 @@ import 'package:mockito/mockito.dart';
 
 import 'package:splash_on_flutter/app_constants.dart';
 import 'package:splash_on_flutter/core/usecase/advice_reader.dart';
+import 'package:splash_on_flutter/core/valueobject/exception.dart';
 
 import 'package:splash_on_flutter/model/home_page_model.dart';
 
@@ -19,15 +20,6 @@ import '../test_helper/helper.dart';
 class MockAdviceReader extends Mock implements AdviceReader {}
 class MockErrorHandler extends Mock implements ErrorHandler {}
 class MockRandom extends Mock implements Random {}
-class MockIOException extends Mock implements IOException {
-	final String msg;
-	MockIOException(this.msg);
-
-	@override
-	String toString() {
-		return this.msg;
-	}
-}
 
 void main () {
 
@@ -110,7 +102,7 @@ void main () {
 			/* set mocks and other */
 			const EXPECTED_CAUSE = 'Expected cause';
 			when(_mockAdviceReader.getNewAdvice())
-				.thenAnswer((invocation) => Future.error(MockIOException(EXPECTED_CAUSE)));
+				.thenAnswer((invocation) => Future.error(InternetNotConnectedException(EXPECTED_CAUSE)));
 
 			/* actually test */
 			_sutHomePageModel.register(_mockErrorHandler);
