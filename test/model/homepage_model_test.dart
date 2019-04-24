@@ -8,8 +8,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:splash_on_flutter/app_constants.dart';
-import 'package:splash_on_flutter/core/port/advice_data_provider.dart';
-import 'package:splash_on_flutter/core/valueobject/data_valueobject.dart';
 import 'package:splash_on_flutter/core/usecase/advice_reader.dart';
 
 import 'package:splash_on_flutter/model/home_page_model.dart';
@@ -18,10 +16,9 @@ import '../test_helper/helper.dart';
 
 
 
-class MockFetchNewAdviceSlipPort extends Mock implements FetchNewAdviceSlip {}
+class MockAdviceReader extends Mock implements AdviceReader {}
 class MockErrorHandler extends Mock implements ErrorHandler {}
 class MockRandom extends Mock implements Random {}
-class MockCurrentAdviceSlipPort extends Mock implements CurrentAdviceSlip {}
 class MockIOException extends Mock implements IOException {
 	final String msg;
 	MockIOException(this.msg);
@@ -37,29 +34,27 @@ void main () {
 	group('Homepage model test', () {
 
 		HomePageModel _sutHomePageModel;
-		FetchNewAdviceSlip _mockFetchNewAdviceSlipPort;
-		CurrentAdviceSlip _mockCurrentAdviceSlipPort;
+
+		ErrorHandler _mockErrorHandler;
+		AdviceReader _mockAdviceReader;
 		Random _mockRandom;
 
 
 		setUp(() {
-			_mockFetchNewAdviceSlipPort = MockFetchNewAdviceSlipPort();
+			_mockErrorHandler = MockErrorHandler();
+			_mockAdviceReader = MockAdviceReader();
 			_mockRandom = MockRandom();
-			_mockCurrentAdviceSlipPort = MockCurrentAdviceSlipPort();
-			_sutHomePageModel = new HomePageModel(new AdviceReader(
-				_mockFetchNewAdviceSlipPort,
-				_mockCurrentAdviceSlipPort
-			), _mockRandom);
+			_sutHomePageModel = new HomePageModel(_mockAdviceReader, _mockRandom);
 		});
 
 
 		tearDown(() {
+			verifyNoMoreInteractions(_mockErrorHandler);
 			verifyNoMoreInteractions(_mockRandom);
-			verifyNoMoreInteractions(_mockFetchNewAdviceSlipPort);
-//			verifyNoMoreInteractions(_mockCurrentAdviceSlipPort);
+			verifyNoMoreInteractions(_mockAdviceReader);
 
-			_mockCurrentAdviceSlipPort = null;
-			_mockFetchNewAdviceSlipPort = null;
+			_mockErrorHandler = null;
+			_mockAdviceReader = null;
 			_mockRandom = null;
 			_sutHomePageModel = null;
 		});
@@ -96,10 +91,61 @@ void main () {
 		});
 
 
-		test('when fetch new advice : if DB works : should update advice text', () async {
+		test('when fetch new advice : if advice_reader fails with no handler : do nothing', () async {
 			/* set mocks and other */
-			const EXPECTED_ADVICE = 'advice';
-			when(_mockFetchNewAdviceSlipPort.getNewAdviceSlip()).thenAnswer((invocation) => Future.value(Slip(EXPECTED_ADVICE)));
+			when(_mockAdviceReader.getNewAdvice())
+				.thenAnswer((invocation) => Future.error(Exception('Expected exception')));
+
+			/* actually test */
+			_sutHomePageModel.onIncrementClicked();
+			await untilCalled(_mockAdviceReader.getNewAdvice())
+				.timeout(ConstDuration.TenMilliSecond);
+
+			/* assert and verify */
+			verify(_mockAdviceReader.getNewAdvice());
+		});
+
+
+		test('when fetch new advice : if advice_reader fails with InternetNotConnected with handler : should handle for connection error', () async {
+			/* set mocks and other */
+			const EXPECTED_CAUSE = 'Expected cause';
+			when(_mockAdviceReader.getNewAdvice())
+				.thenAnswer((invocation) => Future.error(MockIOException(EXPECTED_CAUSE)));
+
+			/* actually test */
+			_sutHomePageModel.register(_mockErrorHandler);
+			_sutHomePageModel.onIncrementClicked();
+			await untilCalled(_mockErrorHandler.handleConnectionError(any))
+				.timeout(ConstDuration.TenMilliSecond);
+
+			/* assert and verify */
+			verify(_mockAdviceReader.getNewAdvice());
+			verify(_mockErrorHandler.handleConnectionError(any));
+		});
+
+
+		test('when fetch new advice : if advice_reader fails with non InternetNotConnected with hanlder : should handle for internal error', () async {
+			/* set mocks and other */
+			when(_mockAdviceReader.getNewAdvice())
+				.thenAnswer((invocation) => Future.error(Exception('Intentional Exception')));
+
+			/* actually test */
+			_sutHomePageModel.register(_mockErrorHandler);
+			_sutHomePageModel.onIncrementClicked();
+			await untilCalled(_mockErrorHandler.handleInternalError(any))
+				.timeout(ConstDuration.TenMilliSecond);
+
+			/* assert and verify */
+			verify(_mockAdviceReader.getNewAdvice());
+			verify(_mockErrorHandler.handleInternalError(any));
+		});
+
+
+		test('when fetch new advice : if advice_reader works : should stop progress, activate buttons and text boxes and show advice', () async {
+			/* set mocks and other */
+			const EXPECTED_ADVICE = 'EXPECTED Advice';
+			when(_mockAdviceReader.getNewAdvice())
+				.thenAnswer((invocation) => Future.value(EXPECTED_ADVICE));
 
 			/* actually test */
 			var changeListener = ChangeListener(_sutHomePageModel.adviceMessageState, 2);
@@ -107,100 +153,23 @@ void main () {
 			await changeListener.waitForChange();
 
 			/* assert and verify */
-			expect(_sutHomePageModel.adviceMessageState.text, EXPECTED_ADVICE);
-			verify(_mockFetchNewAdviceSlipPort.getNewAdviceSlip());
-		});
 
-		test('when fetch new advice : if DB fails and no handler : should do nothing', () {
-			/* set mocks and other */
-			when(_mockFetchNewAdviceSlipPort.getNewAdviceSlip()).thenAnswer((invocation) => Future.error(MockIOException('MSG')));
+			// button state change assert
+			var buttonState = _sutHomePageModel.fabState.value;
+			expect(true, buttonState.isActive);
+			expect(false, buttonState.isLoading);
 
-			/* actually test */
-			_sutHomePageModel.onIncrementClicked();
+			// advice message state change assert
+			var messageDisplayState = _sutHomePageModel.adviceMessageState.value;
+			expect(true, messageDisplayState.isActive);
+			expect(EXPECTED_ADVICE, messageDisplayState.text);
 
-			/* assert and verify */
-			verify(_mockFetchNewAdviceSlipPort.getNewAdviceSlip());
-		});
+			// count message state change start
+			var countMessageDisplayState = _sutHomePageModel.clickMessageState.value;
+			expect(true, countMessageDisplayState.isActive);
 
-
-		test('when fetch new advice : if DB fails IO error : should invoke internet error handlers', () async {
-			/* set mocks and other */
-			const EXPECTED_MSG = 'MSG';
-			var mockErrorHandler = MockErrorHandler();
-
-			when(_mockFetchNewAdviceSlipPort.getNewAdviceSlip()).thenAnswer((invocation) => Future.error(MockIOException(EXPECTED_MSG)));
-
-			/* actually test */
-			_sutHomePageModel.register(mockErrorHandler);
-			_sutHomePageModel.onIncrementClicked();
-
-			/* assert and verify */
-			await untilCalled(mockErrorHandler.handleConnectionError(any));
-			verify(mockErrorHandler.handleConnectionError(EXPECTED_MSG));
-			verifyNoMoreInteractions(mockErrorHandler);
-
-			verify(_mockFetchNewAdviceSlipPort.getNewAdviceSlip());
-		});
-
-
-		test('when fetch new advice : if DB fails non_IO error : should invoke internal error handlers', () async {
-			/* set mocks and other */
-			const EXPECTED_STRING = 'MSG';
-			var mockErrorHandler = MockErrorHandler();
-
-			when (_mockFetchNewAdviceSlipPort.getNewAdviceSlip()).thenAnswer((invocation) => Future.error((Exception(EXPECTED_STRING))));
-
-			/* actually test */
-			_sutHomePageModel.register(mockErrorHandler);
-			_sutHomePageModel.onIncrementClicked();
-
-
-			/* assert and verify */
-			await untilCalled(mockErrorHandler.handleInternalError(any));
-			verify(mockErrorHandler.handleInternalError(any));
-			verifyNoMoreInteractions(mockErrorHandler);
-
-			verify(_mockFetchNewAdviceSlipPort.getNewAdviceSlip());
-		});
-
-
-		test('when fetch new advice : while DB processing : should have inActive and processing state', () async {
-			/* set mocks and others */
-			when(_mockFetchNewAdviceSlipPort.getNewAdviceSlip())
-				.thenAnswer((invocation) => new Completer<Slip>().future);
-
-			/* actually test */
-			var changeListener = ChangeListener(_sutHomePageModel.fabState, 1);
-			_sutHomePageModel.onIncrementClicked();
-			await changeListener.waitForChange();
-
-			/* assert and verify */
-			expect(_sutHomePageModel.fabState.value.isLoading, isTrue);
-			expect(_sutHomePageModel.fabState.value.isActive, isFalse);
-			expect(_sutHomePageModel.adviceMessageState.value.isActive, isFalse);
-			expect(_sutHomePageModel.clickMessageState.value.isActive, isFalse);
-
-			verify(_mockFetchNewAdviceSlipPort.getNewAdviceSlip());
-		});
-
-
-		test('when fetched new advice : if DB workds : should have active and non processing state', () async {
-			/* set mocks and other */
-			const String EXPECTED_VALUE = 'advice';
-			when(_mockFetchNewAdviceSlipPort.getNewAdviceSlip()).thenAnswer((invocation) => Future.value(Slip(EXPECTED_VALUE)));
-
-			/* actually test */
-			var changeListener = ChangeListener(_sutHomePageModel.fabState, 2);
-			_sutHomePageModel.onIncrementClicked();
-			await changeListener.waitForChange();
-
-			/* assert and verify */
-			expect(_sutHomePageModel.fabState.isLoading, isFalse);
-			expect(_sutHomePageModel.fabState.isActive, isTrue);
-			expect(_sutHomePageModel.adviceMessageState.isActive, isTrue);
-			expect(_sutHomePageModel.clickMessageState.isActive, isTrue);
-
-			verify(_mockFetchNewAdviceSlipPort.getNewAdviceSlip());
+			// verify calls
+			verify(_mockAdviceReader.getNewAdvice());
 		});
 
 		group('test unregisteration of error handler : ', () {
@@ -210,13 +179,13 @@ void main () {
 			MockErrorHandler _mockErrorHandler;
 
 			setUp(() {
-				when(_mockFetchNewAdviceSlipPort.getNewAdviceSlip()).thenAnswer((invocation) => Future.error(Exception('excpetion')));
+				when(_mockAdviceReader.getNewAdvice()).thenAnswer((invocation) => Future.error(Exception('excpetion')));
 				_mockErrorHandler = new MockErrorHandler();
 				_sutHomePageModel.register(_mockErrorHandler);
 			});
 
 			tearDown(() {
-				verify(_mockFetchNewAdviceSlipPort.getNewAdviceSlip());
+				verify(_mockAdviceReader.getNewAdvice());
 				verifyNoMoreInteractions(_mockErrorHandler);
 				_mockErrorHandler = null;
 			});

@@ -40,8 +40,11 @@ class ChangeListener {
 	}
 }
 
-
 class ConstWidget {
 	static const Key TEXT_WIDGET_KEY = Key('CONST TEXT WIDGET KET');
 	static const TEXT_WIDGET = const Text('CONST TEXT WIDGET', key: TEXT_WIDGET_KEY, textDirection: TextDirection.ltr,);
+}
+
+class ConstDuration {
+	static const Duration TenMilliSecond = Duration(milliseconds: 10);
 }
