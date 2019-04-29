@@ -112,55 +112,42 @@ void main () {
 			/* assert and verify */
 			verify(_mockAdviceReader.getNewAdvice());
 			verify(_mockErrorHandler.handleConnectionError(any));
-		});
+		}, skip: "Might be removed. Shifting to Streams");
 
 
-		test('when fetch new advice : if advice_reader fails with non InternetNotConnected with hanlder : should handle for internal error', () async {
+		test('when event on advice stream : if non-InternetNotConnectedException and handler registered : should invoke internal error handler', () async {
 			/* set mocks and other */
-			when(_mockAdviceReader.getNewAdvice())
-				.thenAnswer((invocation) => Future.error(Exception('Intentional Exception')));
+			var streamController = StreamController<String>();
+			when(_mockAdviceReader.getAdviceStream()).thenAnswer((invocation) => streamController.stream);
 
 			/* actually test */
 			_sutHomePageModel.register(_mockErrorHandler);
-			_sutHomePageModel.onIncrementClicked();
-			await untilCalled(_mockErrorHandler.handleInternalError(any))
-				.timeout(ConstDuration.TenMilliSecond);
+			streamController.addError(Exception('Intentional exception'));
+			await untilCalled(_mockErrorHandler.handleInternalError(any)).timeout(ConstDuration.TenMilliSecond);
+
+			streamController.close();
 
 			/* assert and verify */
-			verify(_mockAdviceReader.getNewAdvice());
-			verify(_mockErrorHandler.handleInternalError(any));
+			verify(_mockAdviceReader.getAdviceStream());
+			verify(_mockErrorHandler.handleInternalError(UIStrings.INTERNAL_ERROR))	;
 		});
 
 
-		test('when fetch new advice : if advice_reader works : should stop progress, activate buttons and text boxes and show advice', () async {
+		test('when event on advice stream : if InternetNotConnectedException and handler registered : should invoke internet error handler', () async {
 			/* set mocks and other */
-			const EXPECTED_ADVICE = 'EXPECTED Advice';
-			when(_mockAdviceReader.getNewAdvice())
-				.thenAnswer((invocation) => Future.value(EXPECTED_ADVICE));
+			var streamController = StreamController<String>();
+			when(_mockAdviceReader.getAdviceStream()).thenAnswer((invocation) => streamController.stream);
 
 			/* actually test */
-			var changeListener = ChangeListener(_sutHomePageModel.adviceMessageState, 2);
-			_sutHomePageModel.onIncrementClicked();
-			await changeListener.waitForChange();
+			_sutHomePageModel.register(_mockErrorHandler);
+			streamController.addError(InternetNotConnectedException('Intentional exception'));
+			await untilCalled(_mockErrorHandler.handleConnectionError(any)).timeout(ConstDuration.TenMilliSecond);
+
+			streamController.close();
 
 			/* assert and verify */
-
-			// button state change assert
-			var buttonState = _sutHomePageModel.fabState.value;
-			expect(true, buttonState.isActive);
-			expect(false, buttonState.isLoading);
-
-			// advice message state change assert
-			var messageDisplayState = _sutHomePageModel.adviceMessageState.value;
-			expect(true, messageDisplayState.isActive);
-			expect(EXPECTED_ADVICE, messageDisplayState.text);
-
-			// count message state change start
-			var countMessageDisplayState = _sutHomePageModel.clickMessageState.value;
-			expect(true, countMessageDisplayState.isActive);
-
-			// verify calls
-			verify(_mockAdviceReader.getNewAdvice());
+			verify(_mockAdviceReader.getAdviceStream());
+			verify(_mockErrorHandler.handleConnectionError(UIStrings.INTERNET_NOT_CONNECTED));
 		});
 
 
@@ -185,46 +172,22 @@ void main () {
 		});
 
 
+		test('when event on advice strem : any exception and no error-handler registerd : should do nothing', () async {
+			/* set mocks and other */
+			var streamController = StreamController<String>();
+			when(_mockAdviceReader.getAdviceStream()).thenAnswer((invocation) => streamController.stream);
 
-		group('test unregisteration of error handler : ', () {
+			/* actually test */
+			_sutHomePageModel.register(_mockErrorHandler);
+			_sutHomePageModel.unregister(_mockErrorHandler);
+			streamController.addError(Exception('Intentional exception'));
 
-			/** The 2 methods in this group need to be in sync **/
+			// wait for 100 microseconds, for if the other futures from error handle need to be completed
+			await Future.delayed(const Duration(microseconds: 1));
+			streamController.close();
 
-			MockErrorHandler _mockErrorHandler;
-
-			setUp(() {
-				when(_mockAdviceReader.getNewAdvice()).thenAnswer((invocation) => Future.error(Exception('excpetion')));
-				_mockErrorHandler = new MockErrorHandler();
-				_sutHomePageModel.register(_mockErrorHandler);
-			});
-
-			tearDown(() {
-				verify(_mockAdviceReader.getNewAdvice());
-				verifyNoMoreInteractions(_mockErrorHandler);
-				_mockErrorHandler = null;
-			});
-
-			test('since the error_handler is registered : should be call_backed', () async {
-				/* set mocks and other */
-				/* actually test */
-				_sutHomePageModel.onIncrementClicked();
-
-				/* assert and verify */
-				await untilCalled(_mockErrorHandler.handleInternalError(any));
-				verify(_mockErrorHandler.handleInternalError(any));
-			});
-
-			test('unregister error_handler : should not be call_backed', () async {
-				/* set mocks and other */
-
-				/* actually test */
-				_sutHomePageModel.unregister(_mockErrorHandler);
-				_sutHomePageModel.onIncrementClicked();
-
-				/* assert and verify */
-				// wait for 100 microseconds, for if the other futures from error handle need to be completed
-				await Future.delayed(const Duration(microseconds: 1));
-			});
+			/* assert and verify */
+			verify(_mockAdviceReader.getAdviceStream());
 		});
 	});
 }

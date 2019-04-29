@@ -150,6 +150,14 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 	@override
 	void register(ErrorHandler callback) {
 		_errorHandler = callback;
+		_adviceReader.getAdviceStream()
+			.handleError((e) {
+			if (e is InternetNotConnectedException)
+				_errorHandler?.handleConnectionError(UIStrings.INTERNET_NOT_CONNECTED);
+			else
+				_errorHandler?.handleInternalError(UIStrings.INTERNAL_ERROR);
+		})
+			.listen((onData) {});
 	}
 
 	@override
