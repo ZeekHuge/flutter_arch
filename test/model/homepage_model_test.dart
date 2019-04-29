@@ -51,18 +51,17 @@ void main () {
 			_sutHomePageModel = null;
 		});
 
-		test('when change theme color : should change the theme_color property', () async {
+		test('when change theme color : theme-color-stream should emit new theme color', () async {
 			/* set mocks and other */
 			var originalThemeColor = _sutHomePageModel.themeColor.value;
 			when(_mockRandom.nextInt(any)).thenReturn(2);
+			var colorStream = _sutHomePageModel.themeColorStream;
 
 			/* actually test */
-			var colorChangeListener = ChangeListener(_sutHomePageModel.themeColor, 1);
 			_sutHomePageModel.changeThemeColor();
-			await colorChangeListener.waitForChange();
 
 			/* assert and verify */
-			expect(_sutHomePageModel.themeColor.value, isNot(originalThemeColor));
+			expect(await colorStream.first, isNot(originalThemeColor));
 			verify(_mockRandom.nextInt(any));
 		});
 

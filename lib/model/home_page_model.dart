@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
@@ -100,6 +101,15 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 			this._adviceTextState = TextViewState(true, UIStrings.HOMEPAGE_INITIAL_ADVICE);
 
 
+	// ignore: close_sinks
+	StreamController<Color> _themeColorStreamController ;
+	get themeColorStream {
+		if (_themeColorStreamController == null)
+			_themeColorStreamController = StreamController<Color>();
+		return _themeColorStreamController.stream;
+	}
+
+
 	void onIncrementClicked () {
 		_fabState.change(isLoading: true, isActive: false);
 		_adviceTextState.change(isActive: false);
@@ -120,7 +130,9 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 	}
 
 	void changeThemeColor () {
-		_themeColor.value = _COLOR_LIST[_randomGenerator.nextInt(_COLOR_LIST.length)];
+		_themeColorStreamController?.add(
+			_COLOR_LIST[_randomGenerator.nextInt(_COLOR_LIST.length)]
+		);
 	}
 
 	@override
