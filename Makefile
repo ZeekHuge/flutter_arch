@@ -17,7 +17,7 @@ DEPENDENCY_CHECK:
 
 .PHONY:continuous-unit-test
 continuous-unit-test: DEPENDENCY_CHECK
-	@(find ${FILES_TO_WATCH_UNIT_TEST} | entr /bin/bash -c 'date && flutter test && echo -e "-----------\n-----------"')
+	@(find ${FILES_TO_WATCH_UNIT_TEST} | entr /bin/bash -c 'date && flutter test ; echo -e "-----------\n-----------"')
 
 .PHONY:get-codecoverage
 get-codecoverage:
