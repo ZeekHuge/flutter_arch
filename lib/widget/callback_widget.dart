@@ -22,12 +22,12 @@ class CallbackWidget<T> extends StatefulWidget {
 
     @override
     State<StatefulWidget> createState() {
-        return CallbackWidgetState();
+        return _CallbackWidgetState();
     }
 }
 
 
-class CallbackWidgetState<T> extends State<CallbackWidget> {
+class _CallbackWidgetState<T> extends State<CallbackWidget> {
 
 	T callback;
 
