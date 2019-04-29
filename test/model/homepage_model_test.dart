@@ -163,6 +163,29 @@ void main () {
 			verify(_mockAdviceReader.getNewAdvice());
 		});
 
+
+		test('when event on advice stream : if new advice added : advice-message-state-stream should emit new message state', () async {
+			/* set mocks and other */
+			const expectedMessage = 'expected message';
+			final streamController = StreamController<String>();
+
+			when(_mockAdviceReader.getAdviceStream()).thenAnswer((invocation) => streamController.stream);
+
+			/* actually test */
+			streamController.add(expectedMessage);
+			var outputState = await _sutHomePageModel.adviceMessageStateStream.first;
+
+			/* assert and verify */
+			expect(outputState.isActive, true);
+			expect(outputState.text, expectedMessage);
+
+			verify(_mockAdviceReader.getAdviceStream());
+
+			streamController.close();
+		});
+
+
+
 		group('test unregisteration of error handler : ', () {
 
 			/** The 2 methods in this group need to be in sync **/

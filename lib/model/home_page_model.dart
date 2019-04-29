@@ -58,6 +58,14 @@ class FABState extends ValueNotifier<FABState> {
 	}
 }
 
+
+class MessageDisplayState {
+	final bool isActive;
+	final String text;
+
+	const MessageDisplayState._(this.text, this.isActive,);
+}
+
 class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 
 	static const int _INITIAL_COUNT = 0;
@@ -100,6 +108,10 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 			this._msgCountState = TextViewState(true, '${UIStrings.HOMEPAGE_COUNT_MSG_PREFIX} $_INITIAL_COUNT'),
 			this._adviceTextState = TextViewState(true, UIStrings.HOMEPAGE_INITIAL_ADVICE);
 
+
+
+	get adviceMessageStateStream => _adviceReader.getAdviceStream()
+		.map((advice) => MessageDisplayState._(advice, true));
 
 	// ignore: close_sinks
 	StreamController<Color> _themeColorStreamController ;

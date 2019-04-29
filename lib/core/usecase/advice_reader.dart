@@ -10,6 +10,10 @@ class AdviceReader {
 
 	AdviceReader(this._fetchNewAdviceSlipPort, this._currentAdviceSlipPort);
 
+	Stream<String> getAdviceStream () {
+		return Stream.empty();
+	}
+
 	Future<String> getCurrentAdvice() {
 		return _currentAdviceSlipPort.readSlip()
 			.then((slip) {
