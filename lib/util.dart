@@ -12,4 +12,8 @@ class Log {
 	static void i (String tag, String message) {
 		print(_getStringToPrintFromTagAndMessage(tag, message));
 	}
+
+    static void e (String tag, String message) {
+		print(_getStringToPrintFromTagAndMessage(tag, message));
+    }
 }
