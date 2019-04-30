@@ -161,6 +161,7 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 	}
 
 	// ignore: close_sinks
+	final defaultThemeState = const ThemeState(Colors.blue);
 	ThemeStateController _themeStateController ;
 	get themeColorStream {
 		if (_themeStateController == null)
