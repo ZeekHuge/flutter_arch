@@ -104,14 +104,6 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 
 	static const int _INITIAL_COUNT = 0;
 
-	static const List<Color> _COLOR_LIST = [
-		Colors.brown,
-		Colors.deepPurple,
-		Colors.purple,
-		Colors.red,
-		Colors.green,
-		Colors.orange
-	];
 
 	int _clickCounter;
 
@@ -148,11 +140,11 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 		.map((advice) => MessageDisplayState._(advice, true));
 
 	// ignore: close_sinks
-	StreamController<Color> _themeColorStreamController ;
+	ThemeStateController _themeStateController ;
 	get themeColorStream {
-		if (_themeColorStreamController == null)
-			_themeColorStreamController = StreamController<Color>();
-		return _themeColorStreamController.stream;
+		if (_themeStateController == null)
+			_themeStateController = ThemeStateController(_randomGenerator);
+		return _themeStateController.stream;
 	}
 
 
@@ -180,9 +172,7 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 	}
 
 	void changeThemeColor () {
-		_themeColorStreamController?.add(
-			_COLOR_LIST[_randomGenerator.nextInt(_COLOR_LIST.length)]
-		);
+		_themeStateController.changeThemeColorRandomly();
 	}
 
 	@override
@@ -203,6 +193,41 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 		if (_errorHandler == callback)
 			_errorHandler = null;
 	}
+}
+
+class ThemeStateController {
+	static const List<Color> _COLOR_LIST = [
+		Colors.brown,
+		Colors.deepPurple,
+		Colors.purple,
+		Colors.red,
+		Colors.green,
+		Colors.orange
+	];
+
+	final Random _randomGenerator;
+	var _currentState = const ThemeState(Colors.brown); // default
+
+	StreamController<ThemeState> _streamController;
+
+    ThemeStateController(this._randomGenerator);
+
+	Stream<ThemeState> get stream {
+		if (_streamController == null) {
+			_streamController = StreamController();
+		}
+		return _streamController.stream;
+	}
+
+	void changeThemeColorRandomly () {
+		_currentState = ThemeState(_COLOR_LIST[_randomGenerator.nextInt(_COLOR_LIST.length)]);
+		_streamController?.add(_currentState);
+	}
+}
+
+class ThemeState {
+	final Color color;
+	const ThemeState(this.color);
 }
 
 
