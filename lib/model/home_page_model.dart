@@ -23,9 +23,9 @@ class TextViewState extends ValueNotifier<TextViewState> {
 	String _text;
 	bool _isActive;
 
-    TextViewState(this._isActive, this._text) : super(null);
+	TextViewState(this._isActive, this._text) : super(null);
 
-    TextViewState get value => this;
+	TextViewState get value => this;
 
 	String get text => _text;
 	bool get isActive => _isActive;

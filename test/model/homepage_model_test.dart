@@ -124,8 +124,8 @@ void main () {
 		});
 
 
-		test('when listenting to action-alement-state-stream '
-			': after error/message event in advice stream '
+		test('when listenting to action-element-state-stream '
+			': after [error, message] event in advice stream '
 			': action-element-stream should emit non-loading state', () async {
 
 			/* set mocks and other */
