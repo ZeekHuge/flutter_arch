@@ -23,7 +23,7 @@ class MockRandom extends Mock implements Random {}
 
 void main () {
 
-	group('Homepage model test', () {
+	group('Homepage model test: ', () {
 
 		HomePageModel _sutHomePageModel;
 
@@ -51,7 +51,9 @@ void main () {
 			_sutHomePageModel = null;
 		});
 
-		test('when change theme color : theme-color-stream should emit new theme color', () async {
+		test('when change theme color '
+			': independent of advice stream '
+			': theme-color-stream should emit new theme color', () async {
 			/* set mocks and other */
 			var originalThemeColor = _sutHomePageModel.themeColor.value;
 			when(_mockRandom.nextInt(any)).thenReturn(2);
@@ -66,7 +68,9 @@ void main () {
 		});
 
 
-		test('When model started : should show initial values', () {
+		test('When model started '
+			': in the very initial state :'
+			': should show initial values', () {
 			/* set mocks and other */
 			/* actually test */
 			/* assert and verify */
@@ -130,7 +134,10 @@ void main () {
 		});
 
 
-		test('when event on advice stream : if non-InternetNotConnectedException and handler registered : should invoke internal error handler', () async {
+		test('when event on advice stream '
+			': if non-InternetNotConnectedException and handler registered '
+			': should invoke internal error handler', () async {
+
 			/* set mocks and other */
 			var streamController = StreamController<String>();
 			when(_mockAdviceReader.getAdviceStream()).thenAnswer((invocation) => streamController.stream);
@@ -148,7 +155,10 @@ void main () {
 		});
 
 
-		test('when event on advice stream : if InternetNotConnectedException and handler registered : should invoke internet error handler', () async {
+		test('when event on advice stream '
+			': if InternetNotConnectedException and handler registered '
+			': should invoke internet error handler', () async {
+
 			/* set mocks and other */
 			var streamController = StreamController<String>();
 			when(_mockAdviceReader.getAdviceStream()).thenAnswer((invocation) => streamController.stream);
@@ -166,7 +176,10 @@ void main () {
 		});
 
 
-		test('when event on advice stream : if new advice added : advice-message-state-stream should emit new message state', () async {
+		test('when event on advice stream '
+			': if new advice added '
+			': advice-message-state-stream should emit new message state', () async {
+
 			/* set mocks and other */
 			const expectedMessage = 'expected message';
 			final streamController = StreamController<String>();
@@ -187,7 +200,10 @@ void main () {
 		});
 
 
-		test('when event on advice strem : any exception and no error-handler registerd : should do nothing', () async {
+		test('when event on advice strem '
+			': any exception and no error-handler registerd '
+			': should do nothing', () async {
+
 			/* set mocks and other */
 			var streamController = StreamController<String>();
 			when(_mockAdviceReader.getAdviceStream()).thenAnswer((invocation) => streamController.stream);
