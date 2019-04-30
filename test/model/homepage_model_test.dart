@@ -214,8 +214,7 @@ void main () {
 			var outputState = await _sutHomePageModel.adviceMessageStateStream.first;
 
 			/* assert and verify */
-			expect(outputState.isActive, true);
-			expect(outputState.text, expectedMessage);
+			expect(outputState, MessageDisplayState(expectedMessage, true));
 
 			verify(_mockAdviceReader.getAdviceStream());
 

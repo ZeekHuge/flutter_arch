@@ -65,7 +65,20 @@ class MessageDisplayState {
 	final bool isActive;
 	final String text;
 
-	const MessageDisplayState._(this.text, this.isActive,);
+	const MessageDisplayState(this.text, this.isActive,);
+
+	@override
+	int get hashCode => Helper.calculateHash([isActive], [text]);
+
+	@override
+	bool operator ==(other) {
+		if (other is MessageDisplayState)
+			return (
+				other.isActive == isActive
+				&& other.text == text
+			);
+		return false;
+	}
 }
 
 class ActionElementState {
@@ -137,7 +150,7 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 
 
 	get adviceMessageStateStream => _adviceReader.getAdviceStream()
-		.map((advice) => MessageDisplayState._(advice, true));
+		.map((advice) => MessageDisplayState(advice, true));
 
 	// ignore: close_sinks
 	ThemeStateController _themeStateController ;
