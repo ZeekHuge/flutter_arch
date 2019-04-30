@@ -82,37 +82,52 @@ void main () {
 		});
 
 
-		test('when fetch new advice : if advice_reader fails with no handler : do nothing', () async {
+		test('when listenting to action-alement-state-stream '
+			': after error/message event in advice stream '
+			': action-element-stream should emit non-loading state', () async {
+
 			/* set mocks and other */
-			when(_mockAdviceReader.getNewAdvice())
-				.thenAnswer((invocation) => Future.error(Exception('Expected exception')));
+			var adviceStreamController = StreamController<String>();
+			when(_mockAdviceReader.getAdviceStream()).thenAnswer((invocation) => adviceStreamController.stream);
 
 			/* actually test */
-			_sutHomePageModel.onIncrementClicked();
-			await untilCalled(_mockAdviceReader.getNewAdvice())
-				.timeout(ConstDuration.TenMilliSecond);
+			var actionElementStateSequenceFuture = _sutHomePageModel.actionElementStateStream.toList();
+
+			adviceStreamController.add('any-string');
+			adviceStreamController.addError(Exception('Intentional exception'));
+
+			adviceStreamController.close();
 
 			/* assert and verify */
-			verify(_mockAdviceReader.getNewAdvice());
+			expect(await actionElementStateSequenceFuture,
+				[
+					ActionElementState(false), // as response to new message
+					ActionElementState(false), // as response to error
+				]
+			);
+			verify(_mockAdviceReader.getAdviceStream());
 		});
 
 
-		test('when fetch new advice : if advice_reader fails with InternetNotConnected with handler : should handle for connection error', () async {
+		test('when refresh advice '
+			': while no event in advice steam '
+			': action-element-stream should emit on-loading state', () async {
+
 			/* set mocks and other */
-			const EXPECTED_CAUSE = 'Expected cause';
-			when(_mockAdviceReader.getNewAdvice())
-				.thenAnswer((invocation) => Future.error(InternetNotConnectedException(EXPECTED_CAUSE)));
+			var adviceStreamController = StreamController<String>();
+			when(_mockAdviceReader.getAdviceStream()).thenAnswer((invocation) => adviceStreamController.stream);
 
 			/* actually test */
-			_sutHomePageModel.register(_mockErrorHandler);
+			var actionElementStateSequenceFuture = _sutHomePageModel.actionElementStateStream.toList();
+
 			_sutHomePageModel.onIncrementClicked();
-			await untilCalled(_mockErrorHandler.handleConnectionError(any))
-				.timeout(ConstDuration.TenMilliSecond);
+
+			adviceStreamController.close();
 
 			/* assert and verify */
-			verify(_mockAdviceReader.getNewAdvice());
-			verify(_mockErrorHandler.handleConnectionError(any));
-		}, skip: "Might be removed. Shifting to Streams");
+			expect(await actionElementStateSequenceFuture, [ActionElementState(true)]);
+			verify(_mockAdviceReader.getAdviceStream());
+		});
 
 
 		test('when event on advice stream : if non-InternetNotConnectedException and handler registered : should invoke internal error handler', () async {

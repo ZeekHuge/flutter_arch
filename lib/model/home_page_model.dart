@@ -8,8 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:splash_on_flutter/app_constants.dart';
 import 'package:splash_on_flutter/core/usecase/advice_reader.dart';
 import 'package:splash_on_flutter/core/valueobject/exception.dart';
+import 'package:splash_on_flutter/util.dart';
 import 'package:splash_on_flutter/widget/callback_widget.dart';
 
+const _TAG = "home_page_model";
 
 abstract class ErrorHandler {
 	void handleConnectionError (String message);
@@ -64,6 +66,26 @@ class MessageDisplayState {
 	final String text;
 
 	const MessageDisplayState._(this.text, this.isActive,);
+}
+
+class ActionElementState {
+	final bool isLoading;
+	ActionElementState(this.isLoading);
+
+	@override
+	int get hashCode {
+		const PRIME = 31;
+		var result = 17;
+		result = result * PRIME + (isLoading ? 1 : 0);
+		return result;
+	}
+
+	@override
+	bool operator ==(other) {
+		if (other is ActionElementState)
+			return other.isLoading == isLoading;
+		return false;
+	}
 }
 
 class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
@@ -122,23 +144,20 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 	}
 
 
+	ActionElementStateController _actionElementStateController;
+	Stream<ActionElementState> get actionElementStateStream {
+		if (_actionElementStateController == null)
+			_actionElementStateController = ActionElementStateController(_adviceReader.getAdviceStream());
+		return _actionElementStateController.stream;
+	}
+
+
 	void onIncrementClicked () {
 		_fabState.change(isLoading: true, isActive: false);
 		_adviceTextState.change(isActive: false);
 		_msgCountState.change(isActive: false);
 		_clickCounter ++;
-
-		_adviceReader.getNewAdvice()
-			.then((advice){
-				_adviceTextState.change(text: advice, isActive: true);
-				_msgCountState.change(text:'${UIStrings.HOMEPAGE_COUNT_MSG_PREFIX} $_clickCounter', isActive: true);
-				_fabState.change(isLoading: false, isActive: true);
-			}).catchError((e) {
-				if (e is InternetNotConnectedException)
-					_errorHandler?.handleConnectionError(e.toString());
-				else
-					_errorHandler?.handleInternalError(e.toString());
-			});
+		_actionElementStateController?.setOnLoadingState();
 	}
 
 	void changeThemeColor () {
@@ -164,5 +183,51 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 	void unregister(ErrorHandler callback) {
 		if (_errorHandler == callback)
 			_errorHandler = null;
+	}
+}
+
+class ActionElementStateController {
+	final Stream<String> _adviceStream;
+	ActionElementStateController(this._adviceStream);
+
+	StreamController<ActionElementState> _actionElementStateStreamController;
+	StreamSubscription<String> _adviceStreamSubscription;
+	Stream<ActionElementState> get stream {
+		if (_actionElementStateStreamController == null) {
+			_actionElementStateStreamController = StreamController<ActionElementState>();
+			_actionElementStateStreamController.onListen = _onActionElementStateStreamListened;
+			_actionElementStateStreamController.onCancel = _onActionElementStateStreamCanceled;
+		}
+		return _actionElementStateStreamController.stream;
+	}
+
+	void setOnLoadingState () {
+		_actionElementStateStreamController?.add(ActionElementState(true));
+	}
+
+	void _onActionElementStateStreamListened () {
+		_adviceStreamSubscription = _adviceStream.listen(
+			_onNewAdviceOnAdviceStream,
+			onError: _onExceptionInAdviceStream,
+			onDone: _onAdviceStreamIsClosed
+		);
+	}
+
+	void _onAdviceStreamIsClosed () {
+		Log.d(_TAG, 'AdviceStream closed. Closing ActionElementStateStream');
+		_actionElementStateStreamController.close();
+	}
+
+	void _onActionElementStateStreamCanceled () {
+		_adviceStreamSubscription.cancel();
+	}
+
+	void _onExceptionInAdviceStream (Object e) {
+		Log.d(_TAG, 'Error on AdviceStream : ' + e.toString());
+		_actionElementStateStreamController.add(ActionElementState(false));
+	}
+
+	void _onNewAdviceOnAdviceStream (String newAdvice) {
+		_actionElementStateStreamController.add(ActionElementState(false));
 	}
 }
