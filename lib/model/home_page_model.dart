@@ -88,6 +88,23 @@ class ActionElementState {
 	}
 }
 
+class CounterMessageState {
+	final String text;
+    const CounterMessageState(this.text);
+
+	@override
+	int get hashCode => Helper.calculateHash([], [text]);
+
+	@override
+	bool operator ==(other) {
+		if (other is CounterMessageState)
+			return other.text == text;
+		return false;
+	}
+}
+
+
+
 class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 
 	static const int _INITIAL_COUNT = 0;
@@ -151,6 +168,13 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 		return _actionElementStateController.stream;
 	}
 
+	CounterMessageStateController _counterMessageStateController;
+	get counterMessageStateStream {
+		if (_counterMessageStateController == null)
+			_counterMessageStateController = CounterMessageStateController(_adviceReader.getAdviceStream());
+		return _counterMessageStateController.stream;
+	}
+
 
 	void onIncrementClicked () {
 		_fabState.change(isLoading: true, isActive: false);
@@ -183,6 +207,25 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 	void unregister(ErrorHandler callback) {
 		if (_errorHandler == callback)
 			_errorHandler = null;
+	}
+}
+
+
+class CounterMessageStateController {
+
+	int _counterCount;
+	final Stream<String> _adviceStream;
+
+	CounterMessageStateController(this._adviceStream): _counterCount=0;
+
+	Stream<CounterMessageState> get stream {
+		return _adviceStream
+			.map((_)  {
+				_counterCount++;
+				return CounterMessageState(UIStrings.HOMEPAGE_COUNT_MSG_PREFIX + _counterCount.toString());
+			}).handleError((e) {
+				Log.e(_TAG, 'Error in advice stream. Wont handle : ' + e.toString());
+			});
 	}
 }
 

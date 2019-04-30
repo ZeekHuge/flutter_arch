@@ -113,6 +113,29 @@ void main () {
 		});
 
 
+		test('when listentin to count-message-state-stream '
+			': if [error, message] events on advice-stream '
+			': state-stream should handle only new-message events and emit incremented state' , () async {
+
+			/* set mocks and other */
+			var adviceStreamController = StreamController<String>();
+			when(_mockAdviceReader.getAdviceStream()).thenAnswer((invocation) => adviceStreamController.stream);
+
+			/* actually test */
+			var counterMessageStateSequenceFuture = _sutHomePageModel.counterMessageStateStream.toList();
+			adviceStreamController.add('any-string');
+			adviceStreamController.addError(Exception('intentional exception'));
+			adviceStreamController.close();
+
+			/* assert and verify */
+			expect(
+				await counterMessageStateSequenceFuture,
+				[CounterMessageState(UIStrings.HOMEPAGE_COUNT_MSG_PREFIX + '1')]
+			);
+			verify(_mockAdviceReader.getAdviceStream());
+		});
+
+
 		test('when refresh advice '
 			': while no event in advice steam '
 			': action-element-stream should emit on-loading state', () async {
