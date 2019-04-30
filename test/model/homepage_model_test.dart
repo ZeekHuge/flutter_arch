@@ -68,21 +68,37 @@ void main () {
 		});
 
 
-		test('When model started '
+		test('when model started '
 			': in the very initial state :'
-			': should show initial values', () {
+			': default state values should be initialized', () {
+
 			/* set mocks and other */
 			/* actually test */
 			/* assert and verify */
-			// fab state
-			expect(_sutHomePageModel.fabState.isLoading, false);
-			expect(_sutHomePageModel.fabState.isActive, true);
-			// advice message state
-			expect(_sutHomePageModel.adviceMessageState.isActive, true);
-			expect(_sutHomePageModel.adviceMessageState.text, UIStrings.HOMEPAGE_INITIAL_ADVICE);
-			// click message state
-			expect(_sutHomePageModel.clickMessageState.isActive, true);
-			expect(_sutHomePageModel.clickMessageState.text, UIStrings.HOMEPAGE_COUNT_MSG_PREFIX + ' 0');
+			expect(
+				_sutHomePageModel.defaultCountDisplayMessageState,
+				CounterMessageState(UIStrings.HOMEPAGE_COUNT_MSG_PREFIX + '0')
+			);
+			expect(
+				_sutHomePageModel.defaultAdviceMessageDisplayState,
+				MessageDisplayState('', true)
+			);
+			expect(
+				_sutHomePageModel.defaultActionElementState,
+				ActionElementState(true)
+			);
+		});
+
+
+		test('when refresh advice '
+			': any condition '
+			': should invoke advice-reader refresh advice', () {
+			/* set mocks and other */
+			/* actually test */
+			_sutHomePageModel.onIncrementClicked();
+
+			/* assert and verify */
+			verify(_mockAdviceReader.refreshAdvice());
 		});
 
 
@@ -154,6 +170,7 @@ void main () {
 			/* assert and verify */
 			expect(await actionElementStateSequenceFuture, [ActionElementState(true)]);
 			verify(_mockAdviceReader.getAdviceStream());
+			verify(_mockAdviceReader.refreshAdvice());
 		});
 
 

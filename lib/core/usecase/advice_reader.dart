@@ -35,4 +35,6 @@ class AdviceReader {
 				return currentAdviceSlip.advice;
 			});
 	}
+
+	void refreshAdvice() {}
 }

@@ -83,7 +83,7 @@ class MessageDisplayState {
 
 class ActionElementState {
 	final bool isLoading;
-	ActionElementState(this.isLoading);
+	const ActionElementState(this.isLoading);
 
 	@override
 	int get hashCode => Helper.calculateHash([isLoading], []);
@@ -149,6 +149,7 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 
 
 
+	final defaultAdviceMessageDisplayState = const MessageDisplayState('', true);
 	get adviceMessageStateStream => _adviceReader.getAdviceStream()
 		.map((advice) => MessageDisplayState(advice, true));
 
@@ -160,7 +161,7 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 		return _themeStateController.stream;
 	}
 
-
+	var defaultActionElementState = ActionElementStateController.DEFAULT_STATE;
 	ActionElementStateController _actionElementStateController;
 	Stream<ActionElementState> get actionElementStateStream {
 		if (_actionElementStateController == null)
@@ -168,6 +169,8 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 		return _actionElementStateController.stream;
 	}
 
+
+	final defaultCountDisplayMessageState = CounterMessageStateController.DEFAULT_STATE;
 	CounterMessageStateController _counterMessageStateController;
 	get counterMessageStateStream {
 		if (_counterMessageStateController == null)
@@ -182,6 +185,7 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 		_msgCountState.change(isActive: false);
 		_clickCounter ++;
 		_actionElementStateController?.setOnLoadingState();
+		_adviceReader.refreshAdvice();
 	}
 
 	void changeThemeColor () {
@@ -245,6 +249,7 @@ class ThemeState {
 
 
 class CounterMessageStateController {
+	static const DEFAULT_STATE = const CounterMessageState(UIStrings.HOMEPAGE_COUNT_MSG_PREFIX + '0');
 
 	int _counterCount;
 	final Stream<String> _adviceStream;
@@ -263,6 +268,8 @@ class CounterMessageStateController {
 }
 
 class ActionElementStateController {
+	static const DEFAULT_STATE = const ActionElementState(true);
+
 	final Stream<String> _adviceStream;
 	ActionElementStateController(this._adviceStream);
 
