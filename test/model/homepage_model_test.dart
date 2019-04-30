@@ -90,6 +90,28 @@ void main () {
 		});
 
 
+		test('when advice-message-state-stream is listened to '
+			': in any condition'
+			': referesh advice from advice-reader should be invoked ', () {
+
+			/* set mocks and other */
+			when(_mockAdviceReader.getAdviceStream()).thenAnswer((invocation) {
+				return Stream.empty();
+			});
+
+			/* actually test */
+			var stream = _sutHomePageModel.adviceMessageStateStream;
+
+			verify(_mockAdviceReader.getAdviceStream());
+			verifyNoMoreInteractions(_mockAdviceReader);
+
+			stream.listen(null);
+
+			/* assert and verify */
+			verify(_mockAdviceReader.refreshAdvice());
+		});
+
+
 		test('when refresh advice '
 			': any condition '
 			': should invoke advice-reader refresh advice', () {
@@ -234,6 +256,7 @@ void main () {
 			expect(outputState, MessageDisplayState(expectedMessage, true));
 
 			verify(_mockAdviceReader.getAdviceStream());
+			verify(_mockAdviceReader.refreshAdvice()); // called when advice-message-stream is listened to
 
 			streamController.close();
 		});

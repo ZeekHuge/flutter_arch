@@ -148,10 +148,17 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 			this._adviceTextState = TextViewState(true, UIStrings.HOMEPAGE_INITIAL_ADVICE);
 
 
-
 	final defaultAdviceMessageDisplayState = const MessageDisplayState('', true);
-	get adviceMessageStateStream => _adviceReader.getAdviceStream()
-		.map((advice) => MessageDisplayState(advice, true));
+	MessageDisplayStateController _messageDisplayStateController;
+	Stream<MessageDisplayState> get adviceMessageStateStream {
+		if (_messageDisplayStateController == null) {
+			_messageDisplayStateController = MessageDisplayStateController(
+				_adviceReader.getAdviceStream(),
+				() => _adviceReader.refreshAdvice()
+			);
+		}
+		return _messageDisplayStateController.stream;
+	}
 
 	// ignore: close_sinks
 	ThemeStateController _themeStateController ;
@@ -209,6 +216,26 @@ class HomePageModel implements CallbackWidgetCaller<ErrorHandler> {
 	void unregister(ErrorHandler callback) {
 		if (_errorHandler == callback)
 			_errorHandler = null;
+	}
+}
+
+class MessageDisplayStateController {
+	final Stream<String> _adviceStream;
+	final _onListenCallback;
+	StreamController<MessageDisplayState> _streamController;
+
+    MessageDisplayStateController(this._adviceStream, this._onListenCallback);
+
+	Stream<MessageDisplayState> get stream {
+		if (_streamController == null) {
+			_streamController = StreamController();
+			_streamController.onListen = this._onListenCallback;
+			_streamController.addStream(
+				_adviceStream
+					.map((advice) => MessageDisplayState(advice, true))
+			);
+		}
+		return _streamController.stream;
 	}
 }
 
