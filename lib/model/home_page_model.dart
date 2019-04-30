@@ -73,12 +73,7 @@ class ActionElementState {
 	ActionElementState(this.isLoading);
 
 	@override
-	int get hashCode {
-		const PRIME = 31;
-		var result = 17;
-		result = result * PRIME + (isLoading ? 1 : 0);
-		return result;
-	}
+	int get hashCode => Helper.calculateHash([isLoading], []);
 
 	@override
 	bool operator ==(other) {
